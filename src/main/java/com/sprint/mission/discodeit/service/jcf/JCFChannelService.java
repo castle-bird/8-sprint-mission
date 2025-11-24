@@ -7,5 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JCFChannelService implements ChannelService {
+    // 채널 목록 저장을 위한 List
+    private final List<Channel> channels;
+
+    public JCFChannelService() {
+        channels = new ArrayList<>();
+    }
+
 
 }

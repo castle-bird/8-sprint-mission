@@ -1,15 +1,19 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
-
-import java.util.UUID;
-
 public class JavaApplication {
 
     public static void main(String[] args) {
 
 
+
+//        // 서비스 초기화
+//        UserService userService = new JCFUserService();
+//        ChannelService channelService = new JCFChannelService();
+//        MessageService messageService = new JCFMessageService();
+//
+//        // 테스트
+//        userCRUDTest(userService);
+//        channelCRUDTest(channelService);
+//        messageCRUDTest(messageService);
     }
 }
