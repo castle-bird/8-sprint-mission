@@ -1,31 +1,31 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.util.List;
 import java.util.UUID;
 
 public class User {
 
     // 공통
-    private UUID id;
-    private long createdAt;
+    private final UUID id;
+    private final long createdAt;
     private long updatedAt;
 
     // 유저 정보
     private String name;
     private String password;
-    private List<Message> messages;
-    private List<Channel> channels;
+
+    public User(UUID id, long createdAt, String name, String password) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.name = name;
+        this.password = password;
+    }
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", " +
-                "createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", name=" + name +
-                ", password=" + password +
-                ", messages=" + messages +
-                ", channels=" + channels + "]";
+        return "User [id=" + id + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", name=" + name
+                + ", password=" + password + "]";
     }
+
 
     public UUID getId() {
         return id;
@@ -47,14 +47,6 @@ public class User {
         return password;
     }
 
-    public List<Message> getMessages() {
-        return messages;
-    }
-
-    public List<Channel> getChannels() {
-        return channels;
-    }
-
     public void setUpdatedAt(long updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -67,11 +59,4 @@ public class User {
         this.password = password;
     }
 
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
-    }
-
-    public void setChannels(List<Channel> channels) {
-        this.channels = channels;
-    }
 }
