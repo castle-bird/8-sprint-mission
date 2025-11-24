@@ -7,9 +7,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JCFChannelService implements ChannelService {
-    private final List<Channel> Channels;
 
-    public JCFChannelService() {
-        this.Channels = new ArrayList<>();
-    }
 }
