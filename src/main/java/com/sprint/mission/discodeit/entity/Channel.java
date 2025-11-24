@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.util.List;
 import java.util.UUID;
 
 public class Channel {
@@ -13,8 +12,20 @@ public class Channel {
     private String name;
     private String description;
     private User owner;
-    private List<User> users;
-    private List<Message> messages;
+
+    public Channel(
+            UUID id,
+            long createdAt,
+            String name,
+            String description,
+            User owner
+    ) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.name = name;
+        this.description = description;
+        this.owner = owner;
+    }
 
     @Override
     public String toString() {
@@ -24,8 +35,7 @@ public class Channel {
                 ", name=" + name +
                 ", description=" + description +
                 ", owner=" + owner +
-                ", users=" + users +
-                ", messages=" + messages + "]";
+                "]";
     }
 
     public UUID getId() {
@@ -52,14 +62,6 @@ public class Channel {
         return owner;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public List<Message> getMessages() {
-        return messages;
-    }
-
     public void setUpdatedAt(long updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -74,13 +76,5 @@ public class Channel {
 
     public void setOwner(User owner) {
         this.owner = owner;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
     }
 }
