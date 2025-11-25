@@ -13,6 +13,14 @@ public class Message {
     private User user;
     private Channel channel;
 
+    public Message(UUID id, long createdAt, String content, User user, Channel channel) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.content = content;
+        this.user = user;
+        this.channel = channel;
+    }
+
     @Override
     public String toString() {
         return "Message [id=" + id + ", " +
