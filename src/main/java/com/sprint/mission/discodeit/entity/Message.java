@@ -2,72 +2,48 @@ package com.sprint.mission.discodeit.entity;
 
 import java.util.UUID;
 
-public class Message {
-    // 공통
-    private UUID id;
-    private long createdAt;
-    private long updatedAt;
+public class Message extends DefaultEntity{
 
-    // 메세지 정보
     private String content;
-    private User user;
-    private Channel channel;
+    private UUID userId;
+    private UUID channelId;
 
-    public Message(UUID id, long createdAt, String content, User user, Channel channel) {
-        this.id = id;
-        this.createdAt = createdAt;
+    public Message(String content, UUID userId, UUID channelId) {
+        super();
         this.content = content;
-        this.user = user;
-        this.channel = channel;
+        this.userId = userId;
+        this.channelId = channelId;
     }
 
-    @Override
-    public String toString() {
-        return "Message [id=" + id + ", " +
-                "createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", content=" + content +
-                ", user=" + user +
-                ", channel=" + channel + "]";
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-    public long getUpdatedAt() {
-        return updatedAt;
-    }
-
+    // Getter
     public String getContent() {
         return content;
     }
 
-    public User getUser() {
-        return user;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public Channel getChannel() {
-        return channel;
+    public UUID getChannelId() {
+        return channelId;
     }
 
-    public void setUpdatedAt(long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+    // Setter
     public void setContent(String content) {
         this.content = content;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
+    public void setChannelId(UUID channelId) {
+        this.channelId = channelId;
     }
+
+    @Override
+    public String toString() {
+        return "Message [content=" + content + ", userId=" + userId + ", channelId=" + channelId + "]";
+    }
+
 }

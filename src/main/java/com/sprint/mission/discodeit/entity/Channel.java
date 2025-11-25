@@ -1,55 +1,17 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.util.UUID;
+public class Channel extends DefaultEntity {
 
-public class Channel {
-    // 공통
-    private UUID id;
-    private long createdAt;
-    private long updatedAt;
-
-    // 채널 내용
     private String name;
     private String description;
-    private User owner;
 
-    public Channel(
-            UUID id,
-            long createdAt,
-            String name,
-            String description,
-            User owner
-    ) {
-        this.id = id;
-        this.createdAt = createdAt;
+    public Channel(String name, String description) {
+        super();
         this.name = name;
         this.description = description;
-        this.owner = owner;
     }
 
-    @Override
-    public String toString() {
-        return "Channel [id=" + id + ", " +
-                "createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", name=" + name +
-                ", description=" + description +
-                ", owner=" + owner +
-                "]";
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-    public long getUpdatedAt() {
-        return updatedAt;
-    }
-
+    // Getter
     public String getName() {
         return name;
     }
@@ -58,14 +20,7 @@ public class Channel {
         return description;
     }
 
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setUpdatedAt(long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+    // Setter
     public void setName(String name) {
         this.name = name;
     }
@@ -74,7 +29,8 @@ public class Channel {
         this.description = description;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    @Override
+    public String toString() {
+        return "Channel [name=" + name + ", description=" + description + "]";
     }
 }
