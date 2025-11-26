@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.entity;
 
 import java.util.UUID;
 
-public class Message extends DefaultEntity{
+public class Message extends BaseEntity {
 
     private String content;
     private UUID userId;
@@ -29,16 +29,10 @@ public class Message extends DefaultEntity{
     }
 
     // Setter
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public void update(String content) {
+        if (content != null) this.content = content;
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public void setChannelId(UUID channelId) {
-        this.channelId = channelId;
+        super.setUpdatedAt(System.currentTimeMillis());
     }
 
     @Override

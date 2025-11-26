@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-public class Channel extends DefaultEntity {
+public class Channel extends BaseEntity {
 
     private String name;
     private String description;
@@ -21,13 +21,13 @@ public class Channel extends DefaultEntity {
     }
 
     // Setter
-    public void setName(String name) {
-        this.name = name;
+    public void update(String name, String description) {
+        if (name != null) this.name = name;
+        if (description != null) this.description = description;
+
+        super.setUpdatedAt(System.currentTimeMillis());
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     @Override
     public String toString() {
