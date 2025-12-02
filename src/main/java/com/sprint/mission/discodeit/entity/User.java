@@ -4,7 +4,7 @@ public class User extends BaseEntity {
 
     private String name;
     private String email;
-    private String password;
+    private transient String password;
 
     public User(String name, String email, String password) {
         super();

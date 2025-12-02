@@ -1,11 +1,11 @@
-package com.sprint.mission.discodeit.service;
+package com.sprint.mission.discodeit.repository;
 
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface MessageService {
+public interface MessageRepository {
     Message save(Message newMessage);
 
     Message findById(UUID id);
