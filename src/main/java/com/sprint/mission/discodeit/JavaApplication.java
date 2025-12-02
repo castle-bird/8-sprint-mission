@@ -6,9 +6,9 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
+import com.sprint.mission.discodeit.repository.file.FileChannelRepository;
+import com.sprint.mission.discodeit.repository.file.FileMessageRepository;
+import com.sprint.mission.discodeit.repository.file.FileUserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -27,6 +27,7 @@ public class JavaApplication {
         User user3 = userService.save(new User("율곡이이", "율곡이이@이메일.com", "5000"));
         User user4 = userService.save(new User("퇴계이황", "퇴계이황@이메일.com", "1000"));
 
+        // 메세지 용으로 한개만 return
         return user2;
     }
 
@@ -35,31 +36,37 @@ public class JavaApplication {
         Channel channel2 = channelService.save(new Channel("프론트엔드 채널", "코드잇 프론트엔드 학생들을 위한 채널 🍕"));
         Channel channel3 = channelService.save(new Channel("백엔드 채널", "코드잇 백엔드 학생들을 위한 채널 🍔"));
 
+        // 메세지 용으로 한개만 return
         return channel2;
     }
 
-    public static Message setupMessage(MessageService messageService, UUID userId, UUID channelId) {
+    public static void setupMessage(MessageService messageService, UUID userId, UUID channelId) {
         Message message1 = messageService.save(new Message("메세지 입니다. 111", userId, channelId));
         Message message2 = messageService.save(new Message("메세지 입니다. 111", userId, channelId));
         Message message3 = messageService.save(new Message("메세지 입니다. 111", userId, channelId));
-
-        return message1;
     }
 
 
     public static void main(String[] args) {
-        UserRepository userRepository = JCFUserRepository.getInstance();
+        // JCF
+//        UserRepository userRepository = JCFUserRepository.getInstance();
+//        ChannelRepository channelRepository = JCFChannelRepository.getInstance();
+//        MessageRepository messageRepository = JCFMessageRepository.getInstance();
+
+        // File
+        UserRepository userRepository = FileUserRepository.getInstance();
+        ChannelRepository channelRepository = FileChannelRepository.getInstance();
+        MessageRepository messageRepository = FileMessageRepository.getInstance();
+
+        // Service
         UserService userService = new BasicUserService(userRepository);
-
-        ChannelRepository channelRepository = JCFChannelRepository.getInstance();
         ChannelService channelService = new BasicChannelService(channelRepository);
-
-        MessageRepository messageRepository = JCFMessageRepository.getInstance();
         MessageService messageService = new BasicMessageService(messageRepository);
 
+        // Setup
         User u = setupUser(userService);
         Channel c = setupChannel(channelService);
-        Message m = setupMessage(messageService, u.getId(), c.getId());
+        setupMessage(messageService, u.getId(), c.getId());
 
         /// /////////////////////////////////////////////
 
