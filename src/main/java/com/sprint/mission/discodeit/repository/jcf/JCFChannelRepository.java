@@ -25,7 +25,7 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public Channel save(Channel newChannel) {
+    public Channel create(Channel newChannel) {
         data.put(newChannel.getId(), newChannel);
         return newChannel;
     }

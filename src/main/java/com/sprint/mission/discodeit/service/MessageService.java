@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    Message save(Message newMessage);
+    Message create(Message newMessage);
 
     Message findById(UUID id);
 

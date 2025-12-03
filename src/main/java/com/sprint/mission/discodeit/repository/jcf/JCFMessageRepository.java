@@ -25,7 +25,7 @@ public class JCFMessageRepository implements MessageRepository {
     }
 
     @Override
-    public Message save(Message newMessage) {
+    public Message create(Message newMessage) {
         data.put(newMessage.getId(), newMessage);
         return newMessage;
     }

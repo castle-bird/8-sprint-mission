@@ -3,21 +3,16 @@ package com.sprint.mission.discodeit.repository.file;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class FileUserRepository implements UserRepository {
+public class FileUserRepository extends AbstractFileRepository<User> implements UserRepository {
     private static FileUserRepository instance;
-    private final Path path = Path.of("data/users.ser");
-    private Map<UUID, User> data;
 
     private FileUserRepository() {
-        loadFile();
+        super(Path.of("data/users/users.ser"));
     }
 
     public static synchronized FileUserRepository getInstance() {
@@ -28,40 +23,8 @@ public class FileUserRepository implements UserRepository {
         return instance;
     }
 
-    // File > Object
-    private void loadFile() {
-        if (!Files.exists(path)) {
-            data = new HashMap<>();
-
-            return;
-        }
-
-        try (
-                FileInputStream fis = new FileInputStream(path.toFile());
-                ObjectInputStream ois = new ObjectInputStream(fis)
-        ) {
-            Object obj = ois.readObject();
-            data = (Map<UUID, User>) obj;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Object > File
-    private void saveFile() {
-        try (
-                FileOutputStream fos = new FileOutputStream(path.toFile());
-                ObjectOutputStream oos = new ObjectOutputStream(fos)
-        ) {
-            oos.writeObject(data);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
-    public User save(User newUser) {
+    public User create(User newUser) {
         data.put(newUser.getId(), newUser);
 
         saveFile();

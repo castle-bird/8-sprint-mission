@@ -16,14 +16,14 @@ public class BasicMessageService implements MessageService {
     }
 
     @Override
-    public Message save(Message newMessage) {
+    public Message create(Message newMessage) {
         Message findMessage = messageRepository.findById(newMessage.getId());
 
         if (findMessage != null) {
             return null;
         }
 
-        return messageRepository.save(newMessage);
+        return messageRepository.create(newMessage);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User save(User newUser) {
+    public User create(User newUser) {
         // 이미 있는 유저인지 체크
         User findUser = userRepository.findById(newUser.getId());
 
@@ -25,7 +25,7 @@ public class BasicUserService implements UserService {
             return null;
         }
 
-        return userRepository.save(newUser);
+        return userRepository.create(newUser);
     }
 
     @Override

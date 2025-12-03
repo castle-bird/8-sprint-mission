@@ -6,9 +6,9 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.file.FileChannelRepository;
-import com.sprint.mission.discodeit.repository.file.FileMessageRepository;
-import com.sprint.mission.discodeit.repository.file.FileUserRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFMessageRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -22,41 +22,41 @@ import java.util.UUID;
 public class JavaApplication {
 
     public static User setupUser(UserService userService) {
-        User user1 = userService.save(new User("신사임당", "신사임당@이메일.com", "50000"));
-        User user2 = userService.save(new User("세종대왕", "세종대왕@이메일.com", "10000"));
-        User user3 = userService.save(new User("율곡이이", "율곡이이@이메일.com", "5000"));
-        User user4 = userService.save(new User("퇴계이황", "퇴계이황@이메일.com", "1000"));
+        User user1 = userService.create(new User("신사임당", "신사임당@이메일.com", "50000"));
+        User user2 = userService.create(new User("세종대왕", "세종대왕@이메일.com", "10000"));
+        User user3 = userService.create(new User("율곡이이", "율곡이이@이메일.com", "5000"));
+        User user4 = userService.create(new User("퇴계이황", "퇴계이황@이메일.com", "1000"));
 
         // 메세지 용으로 한개만 return
         return user2;
     }
 
     public static Channel setupChannel(ChannelService channelService) {
-        Channel channel1 = channelService.save(new Channel("디자이너 채널", "코드잇 디자이너 학생들을 위한 채널 🖼️"));
-        Channel channel2 = channelService.save(new Channel("프론트엔드 채널", "코드잇 프론트엔드 학생들을 위한 채널 🍕"));
-        Channel channel3 = channelService.save(new Channel("백엔드 채널", "코드잇 백엔드 학생들을 위한 채널 🍔"));
+        Channel channel1 = channelService.create(new Channel("디자이너 채널", "코드잇 디자이너 학생들을 위한 채널 🖼️"));
+        Channel channel2 = channelService.create(new Channel("프론트엔드 채널", "코드잇 프론트엔드 학생들을 위한 채널 🍕"));
+        Channel channel3 = channelService.create(new Channel("백엔드 채널", "코드잇 백엔드 학생들을 위한 채널 🍔"));
 
         // 메세지 용으로 한개만 return
         return channel2;
     }
 
     public static void setupMessage(MessageService messageService, UUID userId, UUID channelId) {
-        Message message1 = messageService.save(new Message("메세지 입니다. 111", userId, channelId));
-        Message message2 = messageService.save(new Message("메세지 입니다. 111", userId, channelId));
-        Message message3 = messageService.save(new Message("메세지 입니다. 111", userId, channelId));
+        Message message1 = messageService.create(new Message("메세지 입니다. 111", userId, channelId));
+        Message message2 = messageService.create(new Message("메세지 입니다. 111", userId, channelId));
+        Message message3 = messageService.create(new Message("메세지 입니다. 111", userId, channelId));
     }
 
 
     public static void main(String[] args) {
         // JCF
-//        UserRepository userRepository = JCFUserRepository.getInstance();
-//        ChannelRepository channelRepository = JCFChannelRepository.getInstance();
-//        MessageRepository messageRepository = JCFMessageRepository.getInstance();
+        UserRepository userRepository = JCFUserRepository.getInstance();
+        ChannelRepository channelRepository = JCFChannelRepository.getInstance();
+        MessageRepository messageRepository = JCFMessageRepository.getInstance();
 
         // File
-        UserRepository userRepository = FileUserRepository.getInstance();
-        ChannelRepository channelRepository = FileChannelRepository.getInstance();
-        MessageRepository messageRepository = FileMessageRepository.getInstance();
+//        UserRepository userRepository = FileUserRepository.getInstance();
+//        ChannelRepository channelRepository = FileChannelRepository.getInstance();
+//        MessageRepository messageRepository = FileMessageRepository.getInstance();
 
         // Service
         UserService userService = new BasicUserService(userRepository);
@@ -71,6 +71,7 @@ public class JavaApplication {
         /// /////////////////////////////////////////////
 
         // 유저 테스트 start
+        System.out.println("**유저 테스트**");
         List<User> users = userService.findAll();
         System.out.println("유저 전체 조회: " + users.size() + "명");
 
@@ -87,9 +88,8 @@ public class JavaApplication {
         System.out.println("삭제된 유저 조회: " + userService.findById(deletedUser.getId()));
 
 
-        /// /////////////////////////////////////////////
-
         // 채널 테스트 start
+        System.out.println("\n**채널 테스트**");
         List<Channel> channels = channelService.findAll();
         System.out.println("채널 전체 조회: " + channels.size() + "개");
 
@@ -102,12 +102,11 @@ public class JavaApplication {
         System.out.println("수정된 채널 조회: " + channelService.findById(updatedchannel.getId()));
 
         Channel deletedChannel = channelService.deleteById(channels.get(0).getId());
-        System.out.println("삭제된 유저: " + deletedChannel);
-        System.out.println("삭제된 유저 조회: " + channelService.findById(deletedChannel.getId()));
+        System.out.println("삭제된 채널: " + deletedChannel);
+        System.out.println("삭제된 채널 조회: " + channelService.findById(deletedChannel.getId()));
 
-        /// /////////////////////////////////////////////
-
-        // 메세지
+        // 메세지 start
+        System.out.println("\n**메세지 테스트**");
         List<Message> messages = messageService.findAll();
         System.out.println("채널 메세지 조회: " + messages.size() + "개");
 

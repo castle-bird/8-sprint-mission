@@ -16,14 +16,14 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel save(Channel newChannel) {
+    public Channel create(Channel newChannel) {
         Channel findChannel = channelRepository.findById(newChannel.getId());
 
         if (findChannel != null) {
             return null;
         }
 
-        return channelRepository.save(newChannel);
+        return channelRepository.create(newChannel);
     }
 
     @Override

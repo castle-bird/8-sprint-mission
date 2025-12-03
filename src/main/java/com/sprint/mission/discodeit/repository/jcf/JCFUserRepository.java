@@ -25,7 +25,7 @@ public class JCFUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User newUser) {
+    public User create(User newUser) {
         data.put(newUser.getId(), newUser);
         return newUser;
     }
