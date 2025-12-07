@@ -24,34 +24,40 @@ public class JCFUserRepository implements UserRepository {
         return instance;
     }
 
+    // 생성
     @Override
     public User create(User newUser) {
+
         data.put(newUser.getId(), newUser);
         return newUser;
     }
 
+    // 조회 [단건]
     @Override
-    public User findById(UUID id) {
-        return data.get(id);
+    public Optional<User> findById(UUID id) {
+
+        return Optional.ofNullable(data.get(id));
     }
 
+    // 조회 [다건]
     @Override
     public List<User> findAll() {
+
         return new ArrayList<>(data.values());
     }
 
+    // 수정
     @Override
     public User modify(User updatedUser) {
+
         data.put(updatedUser.getId(), updatedUser);
+
         return updatedUser;
     }
 
+    // 삭제
     @Override
-    public User deleteById(UUID id) {
-        User findUser = data.get(id);
-
+    public void deleteById(UUID id) {
         data.remove(id);
-
-        return findUser;
     }
 }

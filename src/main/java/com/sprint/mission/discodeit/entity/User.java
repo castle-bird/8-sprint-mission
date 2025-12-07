@@ -1,6 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import java.io.Serial;
+
 public class User extends BaseEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String name;
     private String email;
@@ -39,6 +44,6 @@ public class User extends BaseEntity {
 
     @Override
     public String toString() {
-        return "User [name=" + name + ", email=" + email + "password=" + password + "]";
+        return "User [name=" + name + ", email=" + email + ", password=" + password + "]";
     }
 }

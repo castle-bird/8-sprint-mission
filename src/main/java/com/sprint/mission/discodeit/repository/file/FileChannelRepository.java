@@ -6,13 +6,17 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public class FileChannelRepository extends AbstractFileRepository<Channel> implements ChannelRepository {
+public class FileChannelRepository
+        extends AbstractFileRepository<Channel>
+        implements ChannelRepository {
+
     private static FileChannelRepository instance;
 
     private FileChannelRepository() {
-        super(Path.of("data/channels/channel.ser"));
+        super(Path.of("data/channels/"));
     }
 
     public static synchronized FileChannelRepository getInstance() {
@@ -23,37 +27,49 @@ public class FileChannelRepository extends AbstractFileRepository<Channel> imple
     }
 
     @Override
-    public Channel create(Channel newChannel) {
-        data.put(newChannel.getId(), newChannel);
+    protected UUID getId(Channel result) {
+        return result.getId();
+    }
 
-        saveFile();
+    // 생성
+    @Override
+    public Channel create(Channel newChannel) {
+
+        data.put(newChannel.getId(), newChannel);
+        objectToFile(newChannel);
+
         return newChannel;
     }
 
+    // 조회 [단건]
     @Override
-    public Channel findById(UUID id) {
-        return data.get(id);
+    public Optional<Channel> findById(UUID id) {
+
+        return Optional.ofNullable(data.get(id));
     }
 
+    // 조회 [다건]
     @Override
     public List<Channel> findAll() {
+
         return new ArrayList<>(data.values());
     }
 
+    // 수정
     @Override
     public Channel modify(Channel updatedChannel) {
-        data.put(updatedChannel.getId(), updatedChannel);
 
-        saveFile();
+        data.put(updatedChannel.getId(), updatedChannel);
+        objectToFile(updatedChannel);
+
         return updatedChannel;
     }
 
+    // 삭제
     @Override
-    public Channel deleteById(UUID id) {
-        Channel findChannel = data.get(id);
-        data.remove(id);
+    public void deleteById(UUID id) {
 
-        saveFile();
-        return findChannel;
+        data.remove(id);
+        deleteFile(id);
     }
 }

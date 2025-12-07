@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.ChannelDTO;
+import com.sprint.mission.discodeit.dto.MessageDTO;
+import com.sprint.mission.discodeit.dto.UserDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
@@ -78,14 +81,14 @@ public class JavaApplication {
         User user = userService.findById(users.get(0).getId());
         System.out.println("유저 단일 조회: " + user.getName());
 
-        user.update("세종대왕 수정", null, null);
-        User updatedUser = userService.modify(user);
+
+        User updatedUser = userService.modify(user.getId(), new UserDTO("세종대왕 수정", null, null));
         System.out.println("수정된 유저: " + updatedUser);
         System.out.println("수정된 유저 조회: " + userService.findById(updatedUser.getId()));
 
-        User deletedUser = userService.deleteById(users.get(0).getId());
-        System.out.println("삭제된 유저: " + deletedUser);
-        System.out.println("삭제된 유저 조회: " + userService.findById(deletedUser.getId()));
+        userService.deleteById(users.get(0).getId());
+        System.out.println("삭제된 유저: " + users.get(0));
+        System.out.println("삭제된 유저 조회: " + userService.findById(users.get(0).getId()));
 
 
         // 채널 테스트 start
@@ -96,14 +99,13 @@ public class JavaApplication {
         Channel channel = channelService.findById(channels.get(0).getId());
         System.out.println("채널 단일 조회: " + channel.getName());
 
-        channel.update("디자이너 채널 수정", null);
-        Channel updatedchannel = channelService.modify(channel);
+        Channel updatedchannel = channelService.modify(channel.getId(), new ChannelDTO("프론트엔드 채널 수정", "프론트엔드 채널 수정 수정 수정 수정"));
         System.out.println("수정된 채널: " + updatedchannel);
         System.out.println("수정된 채널 조회: " + channelService.findById(updatedchannel.getId()));
 
-        Channel deletedChannel = channelService.deleteById(channels.get(0).getId());
-        System.out.println("삭제된 채널: " + deletedChannel);
-        System.out.println("삭제된 채널 조회: " + channelService.findById(deletedChannel.getId()));
+        channelService.deleteById(channels.get(0).getId());
+        System.out.println("삭제된 채널: " + channels.get(0));
+        System.out.println("삭제된 채널 조회: " + channelService.findById(channels.get(0).getId()));
 
         // 메세지 start
         System.out.println("\n**메세지 테스트**");
@@ -112,14 +114,13 @@ public class JavaApplication {
 
         Message message = messageService.findById(messages.get(0).getId());
         System.out.println("채널 메세지 조회: " + message.getContent());
-
-        message.update("메세지 입니다. 111 수정수정");
-        Message updatedMessage = messageService.modify(message);
+        
+        Message updatedMessage = messageService.modify(message.getId(), new MessageDTO("메세지 수정입니다."));
         System.out.println("수정된 메세지: " + updatedMessage);
         System.out.println("수정된 메세지 조회: " + messageService.findById(messages.get(0).getId()));
 
-        Message deletedMassage = messageService.deleteById(message.getId());
-        System.out.println("삭제된 메세지: " + deletedMassage);
+        messageService.deleteById(message.getId());
+        System.out.println("삭제된 메세지: " + message);
         System.out.println("삭제된 메세지 조회: " + messageService.findById(messages.get(0).getId()));
     }
 }

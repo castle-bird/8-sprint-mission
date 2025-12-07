@@ -1,11 +1,13 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.UserDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class BasicUserService implements UserService {
@@ -16,12 +18,13 @@ public class BasicUserService implements UserService {
         this.userRepository = userRepository;
     }
 
+    // 생성
     @Override
     public User create(User newUser) {
-        // 이미 있는 유저인지 체크
-        User findUser = userRepository.findById(newUser.getId());
 
-        if (findUser != null) {
+        Optional<User> findUser = userRepository.findById(newUser.getId());
+
+        if (findUser.isPresent()) {
             return null;
         }
 
@@ -30,21 +33,15 @@ public class BasicUserService implements UserService {
 
     @Override
     public User findById(UUID id) {
-        User findUser = userRepository.findById(id);
 
-        // 유저가 있는지
-        if (findUser == null) {
-            return null;
-        }
-
-        return findUser;
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<User> findAll() {
         List<User> allUsers = userRepository.findAll();
 
-        if(allUsers.isEmpty()) {
+        if (allUsers.isEmpty()) {
             return null;
         }
 
@@ -54,12 +51,14 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User modify(User updatedUser) {
-        User findUser = userRepository.findById(updatedUser.getId());
+    public User modify(UUID id, UserDTO updatedUser) {
+        Optional<User> findUserOpt = userRepository.findById(id);
 
-        if (findUser == null) {
+        if (findUserOpt.isEmpty()) {
             return null;
         }
+
+        User findUser = findUserOpt.get();
 
         findUser.update(
                 updatedUser.getName(),
@@ -71,15 +70,11 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User deleteById(UUID id) {
-        User findUser = userRepository.deleteById(id);
+    public void deleteById(UUID id) {
+        Optional<User> findUserOpt = userRepository.findById(id);
 
-        if (findUser == null) {
-            return null;
+        if (findUserOpt.isPresent()) {
+            userRepository.deleteById(id);
         }
-
-        userRepository.deleteById(id);
-
-        return findUser;
     }
 }

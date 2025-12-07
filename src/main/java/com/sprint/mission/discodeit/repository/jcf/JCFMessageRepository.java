@@ -24,34 +24,40 @@ public class JCFMessageRepository implements MessageRepository {
         return instance;
     }
 
+    // 생성
     @Override
     public Message create(Message newMessage) {
+
         data.put(newMessage.getId(), newMessage);
         return newMessage;
     }
 
+    // 조회 [단건]
     @Override
-    public Message findById(UUID id) {
-        return data.get(id);
+    public Optional<Message> findById(UUID id) {
+
+        return Optional.ofNullable(data.get(id));
     }
 
+    // 조회 [다건]
     @Override
     public List<Message> findAll() {
+
         return new ArrayList<>(data.values());
     }
 
+    // 수정
     @Override
     public Message modify(Message updatedMessage) {
+
         data.put(updatedMessage.getId(), updatedMessage);
+
         return updatedMessage;
     }
 
+    // 삭제
     @Override
-    public Message deleteById(UUID id) {
-        Message findMessage = data.get(id);
-
+    public void deleteById(UUID id) {
         data.remove(id);
-
-        return findMessage;
     }
 }
