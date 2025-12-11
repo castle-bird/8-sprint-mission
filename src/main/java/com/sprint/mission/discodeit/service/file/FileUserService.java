@@ -1,23 +1,23 @@
-package com.sprint.mission.discodeit.repository.file;
+package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.service.UserService;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FileUserRepository implements UserRepository {
+public class FileUserService implements UserService {
     private final Path DIRECTORY;
     private final String EXTENSION = ".ser";
 
-    public FileUserRepository() {
+    public FileUserService() {
         this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", User.class.getSimpleName());
-
         if (Files.notExists(DIRECTORY)) {
             try {
                 Files.createDirectories(DIRECTORY);
@@ -32,7 +32,8 @@ public class FileUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public User create(String username, String email, String password) {
+        User user = new User(username, email, password);
         Path path = resolvePath(user.getId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
@@ -42,13 +43,14 @@ public class FileUserRepository implements UserRepository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         return user;
     }
 
     @Override
-    public Optional<User> findById(UUID id) {
+    public User find(UUID userId) {
         User userNullable = null;
-        Path path = resolvePath(id);
+        Path path = resolvePath(userId);
         if (Files.exists(path)) {
             try (
                     FileInputStream fis = new FileInputStream(path.toFile());
@@ -59,7 +61,9 @@ public class FileUserRepository implements UserRepository {
                 throw new RuntimeException(e);
             }
         }
-        return Optional.ofNullable(userNullable);
+
+        return Optional.ofNullable(userNullable)
+                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
     @Override
@@ -84,14 +88,42 @@ public class FileUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean existsById(UUID id) {
-        Path path = resolvePath(id);
-        return Files.exists(path);
+    public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
+        User userNullable = null;
+        Path path = resolvePath(userId);
+        if (Files.exists(path)) {
+            try (
+                    FileInputStream fis = new FileInputStream(path.toFile());
+                    ObjectInputStream ois = new ObjectInputStream(fis)
+            ) {
+                userNullable = (User) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        User user = Optional.ofNullable(userNullable)
+                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+        user.update(newUsername, newEmail, newPassword);
+
+        try(
+                FileOutputStream fos = new FileOutputStream(path.toFile());
+                ObjectOutputStream oos = new ObjectOutputStream(fos)
+        ) {
+            oos.writeObject(user);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return user;
     }
 
     @Override
-    public void deleteById(UUID id) {
-        Path path = resolvePath(id);
+    public void delete(UUID userId) {
+        Path path = resolvePath(userId);
+        if (Files.notExists(path)) {
+            throw new NoSuchElementException("User with id " + userId + " not found");
+        }
         try {
             Files.delete(path);
         } catch (IOException e) {

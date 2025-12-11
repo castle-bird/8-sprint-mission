@@ -1,50 +1,53 @@
-package com.sprint.mission.discodeit.service.basic;
+package com.sprint.mission.discodeit.service.jcf;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
-public class BasicUserService implements UserService {
-    private final UserRepository userRepository;
+public class JCFUserService implements UserService {
+    private final Map<UUID, User> data;
 
-    public BasicUserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public JCFUserService() {
+        this.data = new HashMap<>();
     }
 
     @Override
     public User create(String username, String email, String password) {
         User user = new User(username, email, password);
-        return userRepository.save(user);
+        this.data.put(user.getId(), user);
+
+        return user;
     }
 
     @Override
     public User find(UUID userId) {
-        return userRepository.findById(userId)
+        User userNullable = this.data.get(userId);
+
+        return Optional.ofNullable(userNullable)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll();
+        return this.data.values().stream().toList();
     }
 
     @Override
     public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
-        User user = userRepository.findById(userId)
+        User userNullable = this.data.get(userId);
+        User user = Optional.ofNullable(userNullable)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
         user.update(newUsername, newEmail, newPassword);
-        return userRepository.save(user);
+
+        return user;
     }
 
     @Override
     public void delete(UUID userId) {
-        if (!userRepository.existsById(userId)) {
+        if (!this.data.containsKey(userId)) {
             throw new NoSuchElementException("User with id " + userId + " not found");
         }
-        userRepository.deleteById(userId);
+        this.data.remove(userId);
     }
 }
