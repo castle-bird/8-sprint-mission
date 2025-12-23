@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.response.channel.ChannelDto;
 import com.sprint.mission.discodeit.dto.request.channel.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.channel.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.channel.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.channel.ChannelDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -56,15 +57,25 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public List<ChannelDto> findAllByUserId(UUID userId) {
+        // 현재 입장중인 채널ID들
         List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
                 .map(ReadStatus::getChannelId)
                 .toList();
 
-        return channelRepository.findAll().stream()
-                .filter(channel ->
-                        channel.getType().equals(ChannelType.PUBLIC)
-                                || mySubscribedChannelIds.contains(channel.getId())
-                )
+        // 모든 PUBLIC 채널들만 조회
+        List<Channel> publicChannels = channelRepository.findAllByIsPublicTrue();
+
+        // 사용자가 입장한 채널들 중 PRIVATE만 조회
+        List<Channel> privateChannels = mySubscribedChannelIds.stream()
+                .map(channelRepository::findById)
+                .flatMap(Optional::stream)
+                .filter(channel -> channel.getType().equals(ChannelType.PRIVATE))
+                .toList();
+
+        // 전체 PUBLIC 채널 + 이미 입장한 PRIVATE 채널
+        return Stream.concat(publicChannels.stream(), privateChannels.stream())
+                .distinct()
+                .sorted(Comparator.comparing(Channel::getType)) // 타입별 정렬
                 .map(this::toDto)
                 .toList();
     }
@@ -119,4 +130,6 @@ public class BasicChannelService implements ChannelService {
                 lastMessageAt
         );
     }
+
+
 }

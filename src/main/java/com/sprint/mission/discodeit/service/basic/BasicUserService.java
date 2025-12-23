@@ -29,7 +29,7 @@ public class BasicUserService implements UserService {
     private final UserStatusRepository userStatusRepository;
 
     @Override
-    public User create(UserCreateRequest userCreateRequest, Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
+    public User create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest) {
         String username = userCreateRequest.username();
         String email = userCreateRequest.email();
 
@@ -40,15 +40,19 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException("User with username " + username + " already exists");
         }
 
-        UUID nullableProfileId = optionalProfileCreateRequest
-                .map(profileRequest -> {
-                    String fileName = profileRequest.fileName();
-                    String contentType = profileRequest.contentType();
-                    byte[] bytes = profileRequest.bytes();
-                    BinaryContent binaryContent = new BinaryContent(fileName, (long)bytes.length, contentType, bytes);
+        // Optional체크를 매개변수에서 했는데
+        // Optional은 설계의 의도가 반환값을 null체크하기 위해 만들어진 것이므로 변경함
+        UUID nullableProfileId = Optional.ofNullable(profileCreateRequest)
+                .map(req -> {
+                    String fileName = req.fileName();
+                    String contentType = req.contentType();
+                    byte[] bytes = req.bytes();
+                    BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
+
                     return binaryContentRepository.save(binaryContent).getId();
                 })
                 .orElse(null);
+
         String password = userCreateRequest.password();
 
         User user = new User(username, email, password, nullableProfileId);
@@ -77,7 +81,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(UUID userId, UserUpdateRequest userUpdateRequest, Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
+    public User update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
 
@@ -90,10 +94,11 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException("User with username " + newUsername + " already exists");
         }
 
-        UUID nullableProfileId = optionalProfileCreateRequest
+        UUID nullableProfileId = Optional.ofNullable(profileCreateRequest)
                 .map(profileRequest -> {
+
                     Optional.ofNullable(user.getProfileId())
-                                    .ifPresent(binaryContentRepository::deleteById);
+                            .ifPresent(binaryContentRepository::deleteById);
 
                     String fileName = profileRequest.fileName();
                     String contentType = profileRequest.contentType();
@@ -115,7 +120,7 @@ public class BasicUserService implements UserService {
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
 
         Optional.ofNullable(user.getProfileId())
-                        .ifPresent(binaryContentRepository::deleteById);
+                .ifPresent(binaryContentRepository::deleteById);
         userStatusRepository.deleteByUserId(userId);
 
         userRepository.deleteById(userId);

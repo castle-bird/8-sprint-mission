@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.request.channel.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.channel.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.message.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserCreateRequest;
@@ -14,18 +15,35 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
+import java.util.UUID;
 
 @SpringBootApplication
 public class DiscodeitApplication {
 
     static User setupUser(UserService userService) {
-        User user = userService.create(new UserCreateRequest("woody", "woody@codeit.com", "woody1234"), Optional.empty());
+        User user = userService.create(new UserCreateRequest("woody", "woody@codeit.com", "woody1234"), null);
         return user;
     }
 
-    static Channel setupChannel(ChannelService channelService) {
-        Channel channel = channelService.create(new PublicChannelCreateRequest("공지", "공지 채널입니다."));
+    static Channel setupChannel(ChannelService channelService, UserService userService ) {
+        Channel channel = channelService.create(new PublicChannelCreateRequest("공지1", "공지 채널입니다."));
+        channelService.create(new PublicChannelCreateRequest("공지2", "공지 채널입니다."));
+        channelService.create(new PublicChannelCreateRequest("공지3", "공지 채널입니다."));
+        channelService.create(new PublicChannelCreateRequest("공지4", "공지 채널입니다."));
+        channelService.create(new PublicChannelCreateRequest("공지5", "공지 채널입니다."));
+
+        // 유저 생성
+        User user1 = userService.create(new UserCreateRequest("woody1", "woody1@codeit.com", "woody1234"), null);
+        User user2 = userService.create(new UserCreateRequest("woody2", "woody2@codeit.com", "woody1234"), null);
+
+        // 비공개방 생성
+        List<UUID> list = new ArrayList<>(List.of(user1.getId(), user2.getId()));
+        channelService.create(new PrivateChannelCreateRequest(list));
+
+        // 유저1이 입장 가능한 모든 방 조회
+        channelService.findAllByUserId(user1.getId()).forEach(System.out::println);
+
         return channel;
     }
 
@@ -45,8 +63,9 @@ public class DiscodeitApplication {
 
         // 셋업
         User user = setupUser(userService);
-        Channel channel = setupChannel(channelService);
+        Channel channel = setupChannel(channelService, userService);
+
         // 테스트
-        messageCreateTest(messageService, channel, user);
+
     }
 }
