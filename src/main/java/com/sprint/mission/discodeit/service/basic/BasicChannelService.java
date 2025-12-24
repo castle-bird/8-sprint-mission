@@ -74,8 +74,6 @@ public class BasicChannelService implements ChannelService {
 
         // 전체 PUBLIC 채널 + 이미 입장한 PRIVATE 채널
         return Stream.concat(publicChannels.stream(), privateChannels.stream())
-                .distinct()
-                .sorted(Comparator.comparing(Channel::getType)) // 타입별 정렬
                 .map(this::toDto)
                 .toList();
     }
