@@ -34,10 +34,10 @@ public class BasicUserService implements UserService {
         String email = userCreateRequest.email();
 
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("User with email " + email + " already exists");
+            throw new IllegalArgumentException(email + "은 이미 존재하는 이메일입니다.");
         }
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("User with username " + username + " already exists");
+            throw new IllegalArgumentException(username + "은 이미 존재하는 사용자 이름입니다.");
         }
 
         // Optional체크를 매개변수에서 했는데
