@@ -1,41 +1,44 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.io.Serial;
+import lombok.Getter;
 
-public class Channel extends BaseEntity {
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
-    @Serial
+@Getter
+public class Channel implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    private UUID id;
+    private Instant createdAt;
+    private Instant updatedAt;
+    //
+    private ChannelType type;
     private String name;
     private String description;
 
-    public Channel(String name, String description) {
-        super();
+    public Channel(ChannelType type, String name, String description) {
+        this.id = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        //
+        this.type = type;
         this.name = name;
         this.description = description;
     }
 
-    // Getter
-    public String getName() {
-        return name;
-    }
+    public void update(String newName, String newDescription) {
+        boolean anyValueUpdated = false;
+        if (newName != null && !newName.equals(this.name)) {
+            this.name = newName;
+            anyValueUpdated = true;
+        }
+        if (newDescription != null && !newDescription.equals(this.description)) {
+            this.description = newDescription;
+            anyValueUpdated = true;
+        }
 
-    public String getDescription() {
-        return description;
-    }
-
-    // Setter
-    public void update(String name, String description) {
-        if (name != null) this.name = name;
-        if (description != null) this.description = description;
-
-        super.setUpdatedAt(System.currentTimeMillis());
-    }
-
-
-    @Override
-    public String toString() {
-        return "Channel [name=" + name + ", description=" + description + "]";
+        if (anyValueUpdated) {
+            this.updatedAt = Instant.now();
+        }
     }
 }

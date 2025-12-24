@@ -1,49 +1,55 @@
 package com.sprint.mission.discodeit.entity;
 
-import java.io.Serial;
+import lombok.Getter;
 
-public class User extends BaseEntity {
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
-    @Serial
+@Getter
+public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String name;
+    private UUID id;
+    private Instant createdAt;
+    private Instant updatedAt;
+    //
+    private String username;
     private String email;
-    private transient String password;
+    private String password;
+    private UUID profileId;     // BinaryContent
 
-    public User(String name, String email, String password) {
-        super();
-        this.name = name;
+    public User(String username, String email, String password, UUID profileId) {
+        this.id = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        //
+        this.username = username;
         this.email = email;
         this.password = password;
+        this.profileId = profileId;
     }
 
-    // Getter
-    public String getName() {
-        return name;
-    }
+    public void update(String newUsername, String newEmail, String newPassword, UUID newProfileId) {
+        boolean anyValueUpdated = false;
+        if (newUsername != null && !newUsername.equals(this.username)) {
+            this.username = newUsername;
+            anyValueUpdated = true;
+        }
+        if (newEmail != null && !newEmail.equals(this.email)) {
+            this.email = newEmail;
+            anyValueUpdated = true;
+        }
+        if (newPassword != null && !newPassword.equals(this.password)) {
+            this.password = newPassword;
+            anyValueUpdated = true;
+        }
+        if (newProfileId != null && !newProfileId.equals(this.profileId)) {
+            this.profileId = newProfileId;
+            anyValueUpdated = true;
+        }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    // Setter
-    // DTO를 매개변수로 받아 사용하려 했으나
-    // DTO에 의존적이게 되는것으로 판단하여 각각 수정하기 위한 것들만 따로 받음
-    public void update(String name, String email, String password) {
-        if (name != null) this.name = name;
-        if (email != null) this.email = email;
-        if (password != null) this.password = password;
-
-        super.setUpdatedAt(System.currentTimeMillis());
-    }
-
-    @Override
-    public String toString() {
-        return "User [name=" + name + ", email=" + email + ", password=" + password + "]";
+        if (anyValueUpdated) {
+            this.updatedAt = Instant.now();
+        }
     }
 }

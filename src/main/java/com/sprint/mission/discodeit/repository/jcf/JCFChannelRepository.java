@@ -1,64 +1,56 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+@Repository
 public class JCFChannelRepository implements ChannelRepository {
-    // 싱글턴 패턴으로 데이터 공유
-    // Repository에선 CRUD작업에 관한 작업 중, 데이터 유/무 체크과정 등등을 하지 않는다.
-    // Service단에서 데이터 유/무 체크 관련한 작업을 한다.
+    private final Map<UUID, Channel> data;
 
-    private static JCFChannelRepository instance;
-    private final Map<UUID, Channel> data = new HashMap<>();
-
-    private JCFChannelRepository() {
-        // 기본생성자 private로 객체 내부에서만 사용가능하게
+    public JCFChannelRepository() {
+        this.data = new ConcurrentHashMap<>();
     }
 
-    public static synchronized JCFChannelRepository getInstance() {
-        if (instance == null) {
-            instance = new JCFChannelRepository();
-        }
-        return instance;
-    }
-
-    // 생성
     @Override
-    public Channel create(Channel newChannel) {
-
-        data.put(newChannel.getId(), newChannel);
-
-        return newChannel;
+    public Channel save(Channel channel) {
+        this.data.put(channel.getId(), channel);
+        return channel;
     }
 
-    // 조회 [단건]
     @Override
     public Optional<Channel> findById(UUID id) {
-
-        return Optional.ofNullable(data.get(id));
+        return Optional.ofNullable(this.data.get(id));
     }
 
-    // 조회 [다건]
     @Override
     public List<Channel> findAll() {
-
-        return new ArrayList<>(data.values());
+        return this.data.values().stream().toList();
     }
 
-    // 수정
     @Override
-    public Channel modify(Channel updatedChannel) {
-
-        data.put(updatedChannel.getId(), updatedChannel);
-
-        return updatedChannel;
+    public boolean existsById(UUID id) {
+        return this.data.containsKey(id);
     }
 
-    // 삭제
     @Override
     public void deleteById(UUID id) {
-        data.remove(id);
+        this.data.remove(id);
+    }
+
+    @Override
+    public List<Channel> findAllByIsPublicTrue() {
+        return data.values().stream()
+                .filter(channel -> channel.getType().equals(ChannelType.PUBLIC))
+                .toList();
     }
 }
