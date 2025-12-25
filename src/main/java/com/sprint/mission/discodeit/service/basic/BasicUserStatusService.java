@@ -25,10 +25,10 @@ public class BasicUserStatusService implements UserStatusService {
         UUID userId = request.userId();
 
         if (!userRepository.existsById(userId)) {
-            throw new NoSuchElementException("User with id " + userId + " does not exist");
+            throw new NoSuchElementException("[BasicUserStatusService] create: " + userId + "는 존재하지 않는 사용자 아이디 입니다.");
         }
-        if (userStatusRepository.findByUserId(userId).isPresent()) {
-            throw new IllegalArgumentException("UserStatus with id " + userId + " already exists");
+        if (!userStatusRepository.findByUserId(userId).isPresent()) {
+            throw new IllegalArgumentException("[BasicUserStatusService] create: " + userId + "를 찾을 수 없습니다.");
         }
 
         Instant lastActiveAt = request.lastActiveAt();

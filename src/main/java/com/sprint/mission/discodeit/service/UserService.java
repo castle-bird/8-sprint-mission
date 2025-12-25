@@ -11,8 +11,16 @@ import java.util.UUID;
 
 public interface UserService {
     User create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest);
+
     UserDto find(UUID userId);
+
     List<UserDto> findAll();
+
     User update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest);
+
     void delete(UUID userId);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }
