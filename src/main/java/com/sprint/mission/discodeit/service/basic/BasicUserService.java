@@ -29,15 +29,15 @@ public class BasicUserService implements UserService {
     private final UserStatusRepository userStatusRepository;
 
     @Override
-    public User create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest) {
+    public UserDto create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest) {
         String username = userCreateRequest.username();
         String email = userCreateRequest.email();
 
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException(email + "은 이미 존재하는 이메일입니다.");
+            throw new IllegalArgumentException("[BasicUserService] create(): " + email + "은 이미 존재하는 이메일입니다.");
         }
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException(username + "은 이미 존재하는 사용자 이름입니다.");
+            throw new IllegalArgumentException("[BasicUserService] create(): " + username + "은 이미 존재하는 사용자 이름입니다.");
         }
 
         // Optional체크를 매개변수에서 했는데
@@ -62,14 +62,14 @@ public class BasicUserService implements UserService {
         UserStatus userStatus = new UserStatus(createdUser.getId(), now);
         userStatusRepository.save(userStatus);
 
-        return createdUser;
+        return toDto(createdUser);
     }
 
     @Override
     public UserDto find(UUID userId) {
         return userRepository.findById(userId)
                 .map(this::toDto)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("[BasicUserService] find(): " + userId + "를 찾을 수 없습니다."));
     }
 
     @Override
@@ -81,17 +81,17 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest) {
+    public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("[BasicUserService] update(): " + userId + "를 찾을 수 없습니다."));
 
         String newUsername = userUpdateRequest.newUsername();
         String newEmail = userUpdateRequest.newEmail();
         if (userRepository.existsByEmail(newEmail)) {
-            throw new IllegalArgumentException("User with email " + newEmail + " already exists");
+            throw new IllegalArgumentException("[BasicUserService] update(): " + newEmail + "은 이미 존재하는 이메일입니다.");
         }
         if (userRepository.existsByUsername(newUsername)) {
-            throw new IllegalArgumentException("User with username " + newUsername + " already exists");
+            throw new IllegalArgumentException("[BasicUserService] update(): " + newUsername + "은 이미 존재하는 이름입니다.");
         }
 
         UUID nullableProfileId = Optional.ofNullable(profileCreateRequest)
@@ -111,19 +111,29 @@ public class BasicUserService implements UserService {
         String newPassword = userUpdateRequest.newPassword();
         user.update(newUsername, newEmail, newPassword, nullableProfileId);
 
-        return userRepository.save(user);
+        return toDto(userRepository.save(user));
     }
 
     @Override
     public void delete(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("[BasicUserService] delete(): " + userId + "를 찾을 수 없습니다."));
 
         Optional.ofNullable(user.getProfileId())
                 .ifPresent(binaryContentRepository::deleteById);
         userStatusRepository.deleteByUserId(userId);
 
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 
     private UserDto toDto(User user) {

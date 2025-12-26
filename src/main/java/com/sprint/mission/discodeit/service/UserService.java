@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    User create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest);
+    UserDto create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest);
 
     UserDto find(UUID userId);
 
     List<UserDto> findAll();
 
-    User update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest);
+    UserDto update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest);
 
     void delete(UUID userId);
 
