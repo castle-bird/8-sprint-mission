@@ -54,4 +54,14 @@ public class UserController {
                 .ok()
                 .body(userDtoList);
     }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        userService.delete(id);
+
+        return ResponseEntity
+                .noContent() // 204: 성공, 반환값은 없음
+                .build();
+    }
 }
