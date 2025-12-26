@@ -6,8 +6,12 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/users")
@@ -19,28 +23,35 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public String create(@ModelAttribute UserCreateRequest request) {
+    public ResponseEntity<UserDto> create(@ModelAttribute UserCreateRequest request) {
 
-        User user = userService.create(request, null);
-        log.info("생성된 유저 이름: {}", user.getUsername());
+        UserDto user = userService.create(request, null);
+        log.info("생성된 유저 이름: {}", user.username());
 
-        return "회원가입 완료";
+        return ResponseEntity
+                .ok()
+                .body(user);
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public String update(@ModelAttribute UserDto request) {
+    public ResponseEntity<UserDto> find(@PathVariable UUID id) {
+        UserDto userDto = userService.find(id);
+        log.info("조회된 유저 이름: {}", userDto.username());
 
-        if(!userService.existsByUsername(request.username())) {
-            return "존재하지 않는 사용자 이름입니다.";
-        }
+        return ResponseEntity
+                .ok()
+                .body(userDto);
+    }
 
-        if (!userService.existsByEmail(request.email())) {
-            return "존재하지 않는 사용자 이메일입니다.";
-        }
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<UserDto> userDtoList = userService.findAll();
+        log.info("조회된 유저 수: {}", userDtoList.size());
 
-        //log.info("수정된 유저 이름: {}", user.getUsername());
-
-        return "수정 완료";
+        return ResponseEntity
+                .ok()
+                .body(userDtoList);
     }
 }
