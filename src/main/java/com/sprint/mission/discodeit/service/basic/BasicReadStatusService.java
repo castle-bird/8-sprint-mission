@@ -28,14 +28,14 @@ public class BasicReadStatusService implements ReadStatusService {
         UUID channelId = request.channelId();
 
         if (!userRepository.existsById(userId)) {
-            throw new NoSuchElementException("User with id " + userId + " does not exist");
+            throw new NoSuchElementException("[BasicReadStatusService] create" + userId + "의 유저를 찾을 수 없습니다.");
         }
         if (!channelRepository.existsById(channelId)) {
-            throw new NoSuchElementException("Channel with id " + channelId + " does not exist");
+            throw new NoSuchElementException("[BasicReadStatusService] create" + channelId + "의 채널을 찾을 수 없습니다.");
         }
         if (readStatusRepository.findAllByUserId(userId).stream()
                 .anyMatch(readStatus -> readStatus.getChannelId().equals(channelId))) {
-            throw new IllegalArgumentException("ReadStatus with userId " + userId + " and channelId " + channelId + " already exists");
+            throw new IllegalArgumentException("사용자(ID: " + userId + ")와 채널(ID: " + channelId + ")에 대한 읽음 상태가 이미 존재합니다.");
         }
 
         Instant lastReadAt = request.lastReadAt();
