@@ -2,11 +2,14 @@ package com.sprint.mission.discodeit.controller.user;
 
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.user.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.user.UserDto;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +31,7 @@ public class UserController {
 
     private final UserService userService;
     private final BinaryContentService binaryContentService;
+    private final UserStatusService userStatusService;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
@@ -101,5 +106,25 @@ public class UserController {
             log.error("파일 처리 중 오류 발생", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @RequestMapping(value = "/online", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<List<UserStatus>> onlineStatus() {
+        List<UserStatus> us = userStatusService.findAll();
+
+        return ResponseEntity.ok(us);
+    }
+
+    @RequestMapping(value = "/online/{id}", method = RequestMethod.PATCH)
+    @ResponseBody
+    public ResponseEntity<UserStatus> updateOnlineStatus(
+            @PathVariable UUID id
+    ) {
+        UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
+
+        UserStatus us = userStatusService.update(id, userStatusUpdateRequest);
+
+        return ResponseEntity.ok(us);
     }
 }
