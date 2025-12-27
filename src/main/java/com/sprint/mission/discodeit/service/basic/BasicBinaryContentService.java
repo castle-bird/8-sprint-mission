@@ -64,6 +64,9 @@ public class BasicBinaryContentService implements BinaryContentService {
 
     @Override
     public void saveMultiFiles(List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) return;
+
+        files.forEach(this::saveSingleFile);
 
     }
 
