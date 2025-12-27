@@ -1,16 +1,22 @@
 package com.sprint.mission.discodeit.controller.user;
 
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.user.UserDto;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -20,6 +26,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final BinaryContentService binaryContentService;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
@@ -63,5 +70,36 @@ public class UserController {
         return ResponseEntity
                 .noContent() // 204: 성공, 반환값은 없음
                 .build();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+    @ResponseBody
+    public ResponseEntity<UserDto> update(
+            @PathVariable UUID id,
+            @ModelAttribute UserUpdateRequest request,
+            @RequestParam(required = false) MultipartFile profile
+    ) {
+
+        try {
+            BinaryContentCreateRequest binaryContentCreateRequest = null;
+
+            if (profile != null && !profile.isEmpty()) {
+                binaryContentCreateRequest = new BinaryContentCreateRequest(
+                        profile.getOriginalFilename(),
+                        profile.getContentType(),
+                        profile.getBytes() // 파일 읽는 도중 에러 날 수 있기에 try문 사용
+                );
+                binaryContentService.saveSingleFile(profile);
+            }
+
+            UserDto updatedUser = userService.update(id, request, binaryContentCreateRequest);
+
+            return ResponseEntity.ok(updatedUser);
+
+        } catch (IOException e) {
+
+            log.error("파일 처리 중 오류 발생", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
