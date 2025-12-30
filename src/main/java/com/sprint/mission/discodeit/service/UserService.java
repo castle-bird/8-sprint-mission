@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.request.user.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.user.UserDto;
 import com.sprint.mission.discodeit.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public interface UserService {
 
     List<UserDto> findAll();
 
-    UserDto update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest);
+    UserDto update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest, MultipartFile profileFile);
 
     void delete(UUID userId);
 

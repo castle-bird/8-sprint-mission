@@ -94,10 +94,9 @@ public class UserController {
                         profile.getContentType(),
                         profile.getBytes() // 파일 읽는 도중 에러 날 수 있기에 try문 사용
                 );
-                binaryContentService.saveSingleFile(profile);
             }
 
-            UserDto updatedUser = userService.update(id, request, binaryContentCreateRequest);
+            UserDto updatedUser = userService.update(id, request, binaryContentCreateRequest, profile);
 
             return ResponseEntity.ok(updatedUser);
 

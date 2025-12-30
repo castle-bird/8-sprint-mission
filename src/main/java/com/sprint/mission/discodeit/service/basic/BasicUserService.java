@@ -10,9 +10,11 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,6 +29,7 @@ public class BasicUserService implements UserService {
     //
     private final BinaryContentRepository binaryContentRepository;
     private final UserStatusRepository userStatusRepository;
+    private final BinaryContentService binaryContentService;
 
     @Override
     public UserDto create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest) {
@@ -81,7 +84,12 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest) {
+    public UserDto update(
+            UUID userId,
+            UserUpdateRequest userUpdateRequest,
+            BinaryContentCreateRequest profileCreateRequest,
+            MultipartFile profileFile
+    ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("[BasicUserService] update(): " + userId + "를 찾을 수 없습니다."));
 
@@ -93,6 +101,10 @@ public class BasicUserService implements UserService {
         if (userRepository.existsByUsername(newUsername)) {
             throw new IllegalArgumentException("[BasicUserService] update(): " + newUsername + "은 이미 존재하는 이름입니다.");
         }
+
+        // 프로필 파일이 있다면 추가
+        Optional.ofNullable(profileFile)
+                .ifPresent(binaryContentService::saveSingleFile);
 
         UUID nullableProfileId = Optional.ofNullable(profileCreateRequest)
                 .map(profileRequest -> {
