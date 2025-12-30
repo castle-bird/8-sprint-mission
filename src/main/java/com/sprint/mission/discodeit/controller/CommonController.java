@@ -24,15 +24,6 @@ public class CommonController {
         return "user-list";
     }
 
-    @RequestMapping(value = "/api/user/findAll", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<List<UserDto>> findAll() {
-
-        List<UserDto> users = userService.findAll();
-
-        return ResponseEntity.ok().body(users);
-    }
-
     @RequestMapping(value = "/api/binaryContent/find", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<BinaryContent> findProfile(@RequestParam UUID binaryContentId) {
