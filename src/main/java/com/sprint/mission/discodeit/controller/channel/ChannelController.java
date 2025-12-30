@@ -102,12 +102,6 @@ public class ChannelController {
                 .body(readStatus);
     }
 
-    @RequestMapping(value = "/read/user/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<List<ReadStatus>> readStatusFind(@PathVariable UUID userId) {
-        List<ReadStatus> readStatuses = readStatusService.findAllByUserId(userId);
-        return ResponseEntity.ok().body(readStatuses);
-    }
-
     // ============== 비공개 채널 ==============
     @RequestMapping(value = "/private", method = RequestMethod.POST)
     @ResponseBody

@@ -5,9 +5,11 @@ import com.sprint.mission.discodeit.dto.request.user.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.user.UserDto;
+import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.BinaryContentService;
+import com.sprint.mission.discodeit.service.ReadStatusService;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +32,8 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final BinaryContentService binaryContentService;
     private final UserStatusService userStatusService;
+    private final ReadStatusService readStatusService;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
@@ -125,5 +127,11 @@ public class UserController {
         UserStatus us = userStatusService.update(id, userStatusUpdateRequest);
 
         return ResponseEntity.ok(us);
+    }
+
+    @RequestMapping(value = "/channels/{userId}", method = RequestMethod.GET)
+    public ResponseEntity<List<ReadStatus>> readStatusFind(@PathVariable UUID userId) {
+        List<ReadStatus> readStatuses = readStatusService.findAllByUserId(userId);
+        return ResponseEntity.ok().body(readStatuses);
     }
 }
