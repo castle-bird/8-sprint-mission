@@ -44,11 +44,9 @@ public class MessageController {
                                     file.getContentType(),
                                     file.getBytes()));
                 }
-
-                binaryContentService.saveMultiFiles(attachments);
             }
 
-            Message message = messageService.create(request, binaryContentCreateRequest);
+            Message message = messageService.create(request, binaryContentCreateRequest, attachments);
 
             return ResponseEntity
                     .ok()

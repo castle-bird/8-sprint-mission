@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    Message create(MessageCreateRequest messageCreateRequest, List<BinaryContentCreateRequest> binaryContentCreateRequests);
+    Message create(MessageCreateRequest messageCreateRequest, List<BinaryContentCreateRequest> binaryContentCreateRequests, List<MultipartFile> files);
 
     Message find(UUID messageId);
 
