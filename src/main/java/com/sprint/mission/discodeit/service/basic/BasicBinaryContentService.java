@@ -33,25 +33,18 @@ public class BasicBinaryContentService implements BinaryContentService {
         String fileName = request.fileName();
         byte[] bytes = request.bytes();
         String contentType = request.contentType();
-        BinaryContent binaryContent = new BinaryContent(
-                fileName,
-                (long) bytes.length,
-                contentType,
-                bytes
-        );
+        BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
         return binaryContentRepository.save(binaryContent);
     }
 
     @Override
     public BinaryContent find(UUID binaryContentId) {
-        return binaryContentRepository.findById(binaryContentId)
-                .orElseThrow(() -> new NoSuchElementException("BinaryContent with id " + binaryContentId + " not found"));
+        return binaryContentRepository.findById(binaryContentId).orElseThrow(() -> new NoSuchElementException("BinaryContent with id " + binaryContentId + " not found"));
     }
 
     @Override
     public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
-        return binaryContentRepository.findAllByIdIn(binaryContentIds).stream()
-                .toList();
+        return binaryContentRepository.findAllByIdIn(binaryContentIds).stream().toList();
     }
 
     @Override
@@ -66,13 +59,34 @@ public class BasicBinaryContentService implements BinaryContentService {
     public void saveMultiFiles(List<MultipartFile> files) {
         if (files == null || files.isEmpty()) return;
 
-        files.forEach(this::saveSingleFile);
+        List<Path> savedPaths = new ArrayList<>(); // 원복 시 참조하기 위해 선언
 
+        try {
+            for (MultipartFile file : files) {
+                Path path = saveSingleFile(file);
+
+                if (path != null) {
+                    savedPaths.add(path);
+                }
+            }
+        } catch (RuntimeException e) {
+            for (Path path : savedPaths) {
+                try {
+                    Files.deleteIfExists(path);
+                } catch (IOException ex) {
+                    System.err.println("[BinaryContentService] 원복 삭제 실패: " + path + " - " + ex.getMessage());
+                }
+            }
+
+            throw new RuntimeException("[BinaryContentService] 다중 파일 저장 중 오류가 발생하여 원복을 수행했습니다.", e);
+        }
     }
 
     @Override
-    public void saveSingleFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) return;
+    public Path saveSingleFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+
+        Path targetPath = null; // 원복 시 참조하기 위해 선언
 
         try {
             if (!Files.exists(rootLocation)) {
@@ -81,7 +95,7 @@ public class BasicBinaryContentService implements BinaryContentService {
 
             String originalName = Objects.requireNonNull(file.getOriginalFilename());
             String savedName = UUID.randomUUID() + "_" + originalName;
-            Path targetPath = rootLocation.resolve(savedName);
+            targetPath = rootLocation.resolve(savedName);
 
             // StandardCopyOption.REPLACE_EXISTING: 중복 파일 있으면 에러 안내고 덮기
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
@@ -89,7 +103,17 @@ public class BasicBinaryContentService implements BinaryContentService {
             BinaryContentCreateRequest binaryContentCreateRequest = new BinaryContentCreateRequest(originalName, file.getContentType(), Files.readAllBytes(targetPath));
             this.create(binaryContentCreateRequest);
         } catch (IOException e) {
+
+            if (targetPath != null && Files.exists(targetPath)) {
+                try {
+                    Files.delete(targetPath);
+                } catch (IOException ex) {
+                    System.err.println("[BinaryContentService] 원복 실패: " + ex.getMessage());
+                }
+            }
             throw new RuntimeException("[BinaryContentService] 파일 저장 중 오류 발생", e);
         }
+
+        return targetPath;
     }
 }
