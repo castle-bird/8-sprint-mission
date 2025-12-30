@@ -113,18 +113,4 @@ public class ChannelController {
                 .ok()
                 .body(channel);
     }
-
-
-    @RequestMapping(value = "/all/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<List<ChannelDto>> createPrivate(
-            @PathVariable UUID id
-    ) {
-
-        List<ChannelDto> channels = channelService.findAllByUserId(id);
-
-        return ResponseEntity
-                .ok()
-                .body(channels);
-    }
 }
