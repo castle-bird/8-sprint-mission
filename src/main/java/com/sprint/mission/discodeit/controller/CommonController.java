@@ -23,13 +23,4 @@ public class CommonController {
     public String index() {
         return "user-list";
     }
-
-    @RequestMapping(value = "/api/binaryContent/find", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<BinaryContent> findProfile(@RequestParam UUID binaryContentId) {
-
-        BinaryContent bc = binaryContentService.find(binaryContentId);
-
-        return ResponseEntity.ok().body(bc);
-    }
 }
