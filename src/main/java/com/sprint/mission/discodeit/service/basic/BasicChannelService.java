@@ -52,7 +52,7 @@ public class BasicChannelService implements ChannelService {
     public ChannelDto find(UUID channelId) {
         return channelRepository.findById(channelId)
                 .map(this::toDto)
-                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("[BasicChannelService] find: " + channelId + "를 찾을 수 없습니다."));
     }
 
     @Override
@@ -74,8 +74,6 @@ public class BasicChannelService implements ChannelService {
 
         // 전체 PUBLIC 채널 + 이미 입장한 PRIVATE 채널
         return Stream.concat(publicChannels.stream(), privateChannels.stream())
-                .distinct()
-                .sorted(Comparator.comparing(Channel::getType)) // 타입별 정렬
                 .map(this::toDto)
                 .toList();
     }
@@ -85,9 +83,9 @@ public class BasicChannelService implements ChannelService {
         String newName = request.newName();
         String newDescription = request.newDescription();
         Channel channel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("[BasicChannelService] update(): " + channelId + "를 찾을 수 없습니다."));
         if (channel.getType().equals(ChannelType.PRIVATE)) {
-            throw new IllegalArgumentException("Private channel cannot be updated");
+            throw new IllegalArgumentException("비공개 채널을 업데이트 할 수 없습니다.");
         }
         channel.update(newName, newDescription);
         return channelRepository.save(channel);
@@ -96,7 +94,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public void delete(UUID channelId) {
         Channel channel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("[BasicChannelService] delete(): " + channelId + "를 찾을 수 없습니다."));
 
         messageRepository.deleteAllByChannelId(channel.getId());
         readStatusRepository.deleteAllByChannelId(channel.getId());
