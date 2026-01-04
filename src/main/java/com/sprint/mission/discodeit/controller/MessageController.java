@@ -31,7 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Controller
 @ResponseBody
-@RequestMapping("/api/message")
+@RequestMapping("/api/messages")
 public class MessageController {
 
   private final MessageService messageService;
@@ -40,7 +40,7 @@ public class MessageController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "생성 성공", content = @Content(schema = @Schema(implementation = Message.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
-  @PostMapping(path = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<Message> create(
       @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
@@ -61,8 +61,8 @@ public class MessageController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(schema = @Schema(implementation = Message.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
-  @PatchMapping("/update")
-  public ResponseEntity<Message> update(@RequestParam("messageId") UUID messageId,
+  @PatchMapping("/{messageId}")
+  public ResponseEntity<Message> update(@PathVariable UUID messageId,
       @RequestBody MessageUpdateRequest request) {
     Message updatedMessage = messageService.update(messageId, request);
     return ResponseEntity.status(HttpStatus.OK).body(updatedMessage);
@@ -72,8 +72,8 @@ public class MessageController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "제거 성공", content = @Content(schema = @Schema(hidden = true))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
-  @DeleteMapping("/delete")
-  public ResponseEntity<Void> delete(@RequestParam("messageId") UUID messageId) {
+  @DeleteMapping("/{messageId}")
+  public ResponseEntity<Void> delete(@PathVariable UUID messageId) {
     messageService.delete(messageId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
@@ -82,7 +82,7 @@ public class MessageController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Message.class)))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
-  @GetMapping("/findAllByChannelId")
+  @GetMapping()
   public ResponseEntity<List<Message>> findAllByChannelId(
       @RequestParam("channelId") UUID channelId) {
     List<Message> messages = messageService.findAllByChannelId(channelId);
