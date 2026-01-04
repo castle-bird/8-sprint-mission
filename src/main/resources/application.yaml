@@ -6,3 +6,19 @@ discodeit:
   repository:
     type: file   # jcf | file
     file-directory: .discodeit
+
+
+# swagger config
+# https://springdoc.org/#properties
+springdoc:
+  api-docs:
+    # OpenAPI 명세서 경로(JSON)
+    path: /v3/api-docs
+  swagger-ui:
+    # OpenAPI 명세서 경로(HTML)
+    path: /swagger-ui.html
+    # 요청 응답 시간 표시
+    display-request-duration: true
+    # API 정렬 기준
+    operations-sorter: method   # HTTP 메서드의 알파벳 기준
+  #    operations-sorter: alpha    # Java 메서드의 알파벳 기준
