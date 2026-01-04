@@ -5,11 +5,7 @@ import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
@@ -17,7 +13,7 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     private final Map<UUID, UserStatus> data;
 
     public JCFUserStatusRepository() {
-        this.data = new ConcurrentHashMap<>();
+        this.data = new HashMap<>();
     }
 
     @Override

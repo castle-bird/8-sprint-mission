@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.request.channel.PrivateChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.request.channel.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.request.channel.PublicChannelUpdateRequest;
-import com.sprint.mission.discodeit.dto.response.channel.ChannelDto;
+import com.sprint.mission.discodeit.dto.response.ChannelDto;
+import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -52,28 +51,20 @@ public class BasicChannelService implements ChannelService {
     public ChannelDto find(UUID channelId) {
         return channelRepository.findById(channelId)
                 .map(this::toDto)
-                .orElseThrow(() -> new NoSuchElementException("[BasicChannelService] find: " + channelId + "를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
     }
 
     @Override
     public List<ChannelDto> findAllByUserId(UUID userId) {
-        // 현재 입장중인 채널ID들
         List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
                 .map(ReadStatus::getChannelId)
                 .toList();
 
-        // 모든 PUBLIC 채널들만 조회
-        List<Channel> publicChannels = channelRepository.findAllByIsPublicTrue();
-
-        // 사용자가 입장한 채널들 중 PRIVATE만 조회
-        List<Channel> privateChannels = mySubscribedChannelIds.stream()
-                .map(channelRepository::findById)
-                .flatMap(Optional::stream)
-                .filter(channel -> channel.getType().equals(ChannelType.PRIVATE))
-                .toList();
-
-        // 전체 PUBLIC 채널 + 이미 입장한 PRIVATE 채널
-        return Stream.concat(publicChannels.stream(), privateChannels.stream())
+        return channelRepository.findAll().stream()
+                .filter(channel ->
+                        channel.getType().equals(ChannelType.PUBLIC)
+                                || mySubscribedChannelIds.contains(channel.getId())
+                )
                 .map(this::toDto)
                 .toList();
     }
@@ -83,9 +74,9 @@ public class BasicChannelService implements ChannelService {
         String newName = request.newName();
         String newDescription = request.newDescription();
         Channel channel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new NoSuchElementException("[BasicChannelService] update(): " + channelId + "를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
         if (channel.getType().equals(ChannelType.PRIVATE)) {
-            throw new IllegalArgumentException("비공개 채널을 업데이트 할 수 없습니다.");
+            throw new IllegalArgumentException("Private channel cannot be updated");
         }
         channel.update(newName, newDescription);
         return channelRepository.save(channel);
@@ -94,7 +85,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public void delete(UUID channelId) {
         Channel channel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new NoSuchElementException("[BasicChannelService] delete(): " + channelId + "를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
 
         messageRepository.deleteAllByChannelId(channel.getId());
         readStatusRepository.deleteAllByChannelId(channel.getId());
@@ -128,6 +119,4 @@ public class BasicChannelService implements ChannelService {
                 lastMessageAt
         );
     }
-
-
 }

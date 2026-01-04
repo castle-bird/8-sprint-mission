@@ -1,16 +1,11 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
@@ -18,7 +13,7 @@ public class JCFChannelRepository implements ChannelRepository {
     private final Map<UUID, Channel> data;
 
     public JCFChannelRepository() {
-        this.data = new ConcurrentHashMap<>();
+        this.data = new HashMap<>();
     }
 
     @Override
@@ -45,12 +40,5 @@ public class JCFChannelRepository implements ChannelRepository {
     @Override
     public void deleteById(UUID id) {
         this.data.remove(id);
-    }
-
-    @Override
-    public List<Channel> findAllByIsPublicTrue() {
-        return data.values().stream()
-                .filter(channel -> channel.getType().equals(ChannelType.PUBLIC))
-                .toList();
     }
 }
