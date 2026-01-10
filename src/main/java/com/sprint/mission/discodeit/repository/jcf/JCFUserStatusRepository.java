@@ -2,11 +2,10 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JCFUserStatusRepository implements UserStatusRepository {
 
-  private final Map<UUID, UserStatus> data;
+  private final ConcurrentHashMap<UUID, UserStatus> data;
 
   public JCFUserStatusRepository() {
-    this.data = new HashMap<>();
+    this.data = new ConcurrentHashMap<>();
   }
 
   @Override

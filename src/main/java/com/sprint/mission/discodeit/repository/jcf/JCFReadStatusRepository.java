@@ -2,11 +2,10 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JCFReadStatusRepository implements ReadStatusRepository {
 
-  private final Map<UUID, ReadStatus> data;
+  private final ConcurrentHashMap<UUID, ReadStatus> data;
 
   public JCFReadStatusRepository() {
-    this.data = new HashMap<>();
+    this.data = new ConcurrentHashMap<>();
   }
 
   @Override

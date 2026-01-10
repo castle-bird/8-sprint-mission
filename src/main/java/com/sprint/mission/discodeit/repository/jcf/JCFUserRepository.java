@@ -2,11 +2,10 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JCFUserRepository implements UserRepository {
 
-  private final Map<UUID, User> data;
+  private final ConcurrentHashMap<UUID, User> data;
 
   public JCFUserRepository() {
-    this.data = new HashMap<>();
+    this.data = new ConcurrentHashMap<>();
   }
 
   @Override
