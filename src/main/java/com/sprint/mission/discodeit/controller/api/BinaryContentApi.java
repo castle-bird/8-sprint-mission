@@ -1,0 +1,31 @@
+package com.sprint.mission.discodeit.controller.api;
+
+import com.sprint.mission.discodeit.entity.BinaryContent;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.UUID;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Tag(name = "BinaryContent Controller", description = "BinaryContent 관련 컨트롤러입니다.")
+@RequestMapping("/api/binaryContents")
+public interface BinaryContentApi {
+
+  @Operation(summary = "BinaryContent 1개 조회", description = "BinaryContent를 1개 조회할 수 있습니다.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = BinaryContent.class))),
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
+  ResponseEntity<BinaryContent> find(UUID binaryContentId);
+
+  @Operation(summary = "BinaryContent 여러개 조회", description = "BinaryContent를 여러개 조회할 수 있습니다.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))),
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
+  ResponseEntity<List<BinaryContent>> findAllByIdIn(List<UUID> binaryContentIds);
+}
