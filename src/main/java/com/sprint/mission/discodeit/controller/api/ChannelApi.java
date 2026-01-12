@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,15 +36,11 @@ public interface ChannelApi {
       )
   })
   ResponseEntity<Channel> create(
-      @RequestBody(
+      @Parameter(
+          name = "request",
           description = "공개채널 생성정보",
           required = true,
-          content = @Content(
-              mediaType = "application/json",
-              schema = @Schema(
-                  implementation = PublicChannelCreateRequest.class
-              )
-          )
+          schema = @Schema(implementation = PublicChannelCreateRequest.class)
       )
       PublicChannelCreateRequest request
   );
@@ -60,15 +55,11 @@ public interface ChannelApi {
           content = @Content(schema = @Schema(implementation = Channel.class))),
   })
   ResponseEntity<Channel> create(
-      @RequestBody(
+      @Parameter(
+          name = "request",
           description = "비공개채널 생성정보",
           required = true,
-          content = @Content(
-              mediaType = "application/json",
-              schema = @Schema(
-                  implementation = PrivateChannelCreateRequest.class
-              )
-          )
+          schema = @Schema(implementation = PrivateChannelCreateRequest.class)
       )
       PrivateChannelCreateRequest request
   );

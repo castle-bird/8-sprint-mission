@@ -3,10 +3,10 @@ package com.sprint.mission.discodeit.controller.api;
 import com.sprint.mission.discodeit.dto.request.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,15 +36,11 @@ public interface AuthApi {
       )
   })
   ResponseEntity<User> login(
-      @RequestBody(
+      @Parameter(
+          name = "loginRequest",
           description = "로그인 정보",
           required = true,
-          content = @Content(
-              mediaType = "application/json",
-              schema = @Schema(
-                  implementation = LoginRequest.class
-              )
-          )
+          schema = @Schema(implementation = LoginRequest.class)
       )
       LoginRequest loginRequest);
 }
