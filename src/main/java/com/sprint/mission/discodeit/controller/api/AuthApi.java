@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.request.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,11 +17,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/auth")
 public interface AuthApi {
 
-  @Operation(summary = "로그인", description = "로그인을 할 수 있습니다.")
+  @Operation(
+      summary = "로그인",
+      description = "로그인을 할 수 있습니다."
+  )
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = User.class))),
-      @ApiResponse(responseCode = "401", description = "인증 실패 (아이디/비밀번호 불일치)", content = @Content(schema = @Schema(hidden = true))),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
+      @ApiResponse(
+          responseCode = "200", description = "로그인 성공",
+          content = @Content(schema = @Schema(implementation = User.class))
+      ),
+      @ApiResponse(
+          responseCode = "404", description = "사용자를 찾을 수 없음",
+          content = @Content(examples = @ExampleObject(value = "User with username {username} not found"))
+      ),
+      @ApiResponse(
+          responseCode = "400", description = "비밀번호가 일치하지 않음",
+          content = @Content(examples = @ExampleObject(value = "Wrong password"))
+      )
+  })
   ResponseEntity<User> login(
       @RequestBody(
           description = "로그인 정보",
