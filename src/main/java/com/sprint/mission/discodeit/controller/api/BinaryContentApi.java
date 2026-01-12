@@ -2,8 +2,11 @@ package com.sprint.mission.discodeit.controller.api;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,15 +20,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/binaryContents")
 public interface BinaryContentApi {
 
-  @Operation(summary = "BinaryContent 1개 조회", description = "BinaryContent를 1개 조회할 수 있습니다.")
+  @Operation(
+      summary = "BinaryContent 1개 조회",
+      description = "BinaryContent를 1개 조회할 수 있습니다."
+  )
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = BinaryContent.class))),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
-  ResponseEntity<BinaryContent> find(UUID binaryContentId);
+      @ApiResponse(
+          responseCode = "200", description = "첨부 파일 조회 성공",
+          content = @Content(schema = @Schema(implementation = BinaryContent.class))
+      ),
+      @ApiResponse(
+          responseCode = "404", description = "첨부 파일을 찾을 수 없음",
+          content = @Content(examples = @ExampleObject(value = "BinaryContent with id {binaryContentId} not found"))
+      )
+  })
+  ResponseEntity<BinaryContent> find(
+      @Parameter(
+          name = "binaryContentId",
+          description = "파일 ID",
+          required = true,
+          in = ParameterIn.PATH,
+          schema = @Schema(implementation = UUID.class)
+      )
+      UUID binaryContentId
+  );
 
   @Operation(summary = "BinaryContent 여러개 조회", description = "BinaryContent를 여러개 조회할 수 있습니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(hidden = true)))})
-  ResponseEntity<List<BinaryContent>> findAllByIdIn(List<UUID> binaryContentIds);
+      @ApiResponse(
+          responseCode = "200", description = "첨부 파일 목록 조회 성공",
+          content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))
+      )
+  })
+  ResponseEntity<List<BinaryContent>> findAllByIdIn(
+      @Parameter(
+          name = "binaryContentIds",
+          description = "파일 ID 목록 list",
+          required = true,
+          in = ParameterIn.QUERY,
+          array = @ArraySchema(schema = @Schema(implementation = UUID.class))
+      )
+      List<UUID> binaryContentIds
+  );
 }
