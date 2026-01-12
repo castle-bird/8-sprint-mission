@@ -48,12 +48,14 @@ public interface UserApi {
           name = "userCreateRequest",
           description = "생성할 사용자 정보",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = UserCreateRequest.class)
       )
       UserCreateRequest userCreateRequest,
       @Parameter(
           name = "profile",
           description = "사용자 프로필 이미지",
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = MultipartFile.class)
       )
       MultipartFile profile
@@ -81,6 +83,7 @@ public interface UserApi {
       @Parameter(
           name = "userId",
           description = "수정할 사용자 ID",
+          required = true,
           in = ParameterIn.PATH,
           schema = @Schema(implementation = UUID.class)
       )
@@ -88,12 +91,15 @@ public interface UserApi {
       @Parameter(
           name = "userUpdateRequest",
           description = "수정할 사용자 입력정보",
+          required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = UserUpdateRequest.class)
       )
       UserUpdateRequest userUpdateRequest,
       @Parameter(
           name = "profile",
           description = "수정할 사용자 프로필",
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = MultipartFile.class)
       )
       MultipartFile profile
@@ -118,6 +124,7 @@ public interface UserApi {
       @Parameter(
           name = "userId",
           description = "삭제할 사용자 ID",
+          required = true,
           in = ParameterIn.PATH,
           schema = @Schema(implementation = UUID.class)
       )
@@ -153,12 +160,15 @@ public interface UserApi {
           name = "userId",
           description = "수정할 사용자 ID",
           in = ParameterIn.PATH,
+          required = true,
           schema = @Schema(implementation = UUID.class)
       )
       UUID userId,
       @Parameter(
           name = "request",
           description = "수정할 사용자 입력정보",
+          in = ParameterIn.DEFAULT,
+          required = true,
           schema = @Schema(implementation = UserStatusUpdateRequest.class)
       )
       UserStatusUpdateRequest request);

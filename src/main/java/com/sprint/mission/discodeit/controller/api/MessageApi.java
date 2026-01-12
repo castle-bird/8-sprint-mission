@@ -45,12 +45,14 @@ public interface MessageApi {
           name = "messageCreateRequest",
           description = "Message 생성 정보",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = MessageCreateRequest.class)
       )
       MessageCreateRequest messageCreateRequest,
       @Parameter(
           name = "attachments",
           description = "이미지 첨부파일",
+          in = ParameterIn.DEFAULT,
           array = @ArraySchema(schema = @Schema(type = "string", format = "binary"))
       )
       List<MultipartFile> attachments
@@ -83,6 +85,7 @@ public interface MessageApi {
           name = "request",
           description = "수정할 Message 내용",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = MessageUpdateRequest.class)
       )
       MessageUpdateRequest request

@@ -40,6 +40,7 @@ public interface ChannelApi {
           name = "request",
           description = "공개채널 생성정보",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = PublicChannelCreateRequest.class)
       )
       PublicChannelCreateRequest request
@@ -59,6 +60,7 @@ public interface ChannelApi {
           name = "request",
           description = "비공개채널 생성정보",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = PrivateChannelCreateRequest.class)
       )
       PrivateChannelCreateRequest request
@@ -95,7 +97,7 @@ public interface ChannelApi {
           name = "request",
           description = "채널의 수정 내용들",
           required = true,
-          in = ParameterIn.QUERY,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = PublicChannelUpdateRequest.class)
       )
       PublicChannelUpdateRequest request

@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.request.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,6 +40,7 @@ public interface AuthApi {
       @Parameter(
           name = "loginRequest",
           description = "로그인 정보",
+          in = ParameterIn.DEFAULT,
           required = true,
           schema = @Schema(implementation = LoginRequest.class)
       )

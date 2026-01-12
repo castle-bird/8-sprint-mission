@@ -45,6 +45,7 @@ public interface ReadStatusApi {
           name = "request",
           description = "읽은 시간 생성",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = ReadStatusCreateRequest.class)
       )
       ReadStatusCreateRequest request
@@ -77,6 +78,7 @@ public interface ReadStatusApi {
           name = "request",
           description = "읽은 가장 최근 시간",
           required = true,
+          in = ParameterIn.DEFAULT,
           schema = @Schema(implementation = ReadStatusUpdateRequest.class)
       )
       ReadStatusUpdateRequest request
