@@ -94,7 +94,7 @@ public interface ReadStatusApi {
   })
   ResponseEntity<List<ReadStatus>> findAllByUserId(
       @Parameter(
-          name = "request",
+          name = "userId",
           description = "접속 가능한 채널을 찾을 사용자 ID",
           required = true,
           in = ParameterIn.QUERY,
