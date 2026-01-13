@@ -1,27 +1,25 @@
 package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.request.user.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.request.user.UserUpdateRequest;
-import com.sprint.mission.discodeit.dto.response.user.UserDto;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.UserDto;
 import com.sprint.mission.discodeit.entity.User;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService {
-    UserDto create(UserCreateRequest userCreateRequest, BinaryContentCreateRequest profileCreateRequest);
 
-    UserDto find(UUID userId);
+  User create(UserCreateRequest userCreateRequest,
+      Optional<BinaryContentCreateRequest> profileCreateRequest);
 
-    List<UserDto> findAll();
+  UserDto find(UUID userId);
 
-    UserDto update(UUID userId, UserUpdateRequest userUpdateRequest, BinaryContentCreateRequest profileCreateRequest, MultipartFile profileFile);
+  List<UserDto> findAll();
 
-    void delete(UUID userId);
+  User update(UUID userId, UserUpdateRequest userUpdateRequest,
+      Optional<BinaryContentCreateRequest> profileCreateRequest);
 
-    boolean existsByEmail(String email);
-
-    boolean existsByUsername(String username);
+  void delete(UUID userId);
 }
