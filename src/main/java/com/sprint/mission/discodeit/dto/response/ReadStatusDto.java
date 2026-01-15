@@ -7,8 +7,6 @@ import lombok.Builder;
 @Builder
 public record ReadStatusDto(
     UUID id,
-    Instant createdAt,
-    Instant updatedAt,
     UUID userID,
     UUID channelId,
     Instant lastReadAt

@@ -7,8 +7,6 @@ import lombok.Builder;
 @Builder
 public record UserStatusDto(
     UUID id,
-    Instant createdAt,
-    Instant updatedAt,
     UUID userId,
     Instant lastActiveAt
 ) {
