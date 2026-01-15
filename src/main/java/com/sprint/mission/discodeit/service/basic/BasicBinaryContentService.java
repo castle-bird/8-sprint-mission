@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
@@ -17,37 +18,56 @@ public class BasicBinaryContentService implements BinaryContentService {
   private final BinaryContentRepository binaryContentRepository;
 
   @Override
-  public BinaryContent create(BinaryContentCreateRequest request) {
+  public BinaryContentDto create(BinaryContentCreateRequest request) {
+    // 생성
+
     String fileName = request.fileName();
-    byte[] bytes = request.bytes();
     String contentType = request.contentType();
-    BinaryContent binaryContent = new BinaryContent(
-        fileName,
-        (long) bytes.length,
-        contentType,
-        bytes
-    );
-    return binaryContentRepository.save(binaryContent);
+    byte[] bytes = request.bytes();
+
+    BinaryContent binaryContent = BinaryContent.builder()
+        .fileName(fileName)
+        .contentType(contentType)
+        .bytes(bytes)
+        .build();
+
+    return toDto(binaryContentRepository.save(binaryContent));
   }
 
   @Override
-  public BinaryContent find(UUID binaryContentId) {
-    return binaryContentRepository.findById(binaryContentId)
+  public BinaryContentDto find(UUID binaryContentId) {
+    // 단건 찾기
+    BinaryContent binaryContent = binaryContentRepository.findById(binaryContentId)
         .orElseThrow(() -> new NoSuchElementException(
             "BinaryContent with id " + binaryContentId + " not found"));
+
+    return toDto(binaryContent);
   }
 
   @Override
-  public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
-    return binaryContentRepository.findAllByIdIn(binaryContentIds).stream()
+  public List<BinaryContentDto> findAllByIdIn(List<UUID> binaryContentIds) {
+    // 다건 찾기
+
+    return binaryContentRepository.findAllById(binaryContentIds).stream()
+        .map(this::toDto)
         .toList();
   }
 
   @Override
   public void delete(UUID binaryContentId) {
+    // 삭제
+
     if (!binaryContentRepository.existsById(binaryContentId)) {
       throw new NoSuchElementException("BinaryContent with id " + binaryContentId + " not found");
     }
     binaryContentRepository.deleteById(binaryContentId);
+  }
+
+  BinaryContentDto toDto(BinaryContent binaryContent) {
+    return BinaryContentDto.builder()
+        .id(binaryContent.getId())
+        .fileName(binaryContent.getFileName())
+        .contentType(binaryContent.getContentType())
+        .build();
   }
 }
