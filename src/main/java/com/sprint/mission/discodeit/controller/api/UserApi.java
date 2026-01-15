@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.UserDto;
+import com.sprint.mission.discodeit.dto.response.UserStatusDto;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +44,7 @@ public interface UserApi {
           content = @Content(examples = @ExampleObject(value = "User with email {email} already exists"))
       ),
   })
-  ResponseEntity<User> create(
+  ResponseEntity<UserDto> create(
       @Parameter(
           name = "userCreateRequest",
           description = "생성할 사용자 정보",
@@ -79,7 +80,7 @@ public interface UserApi {
           content = @Content(examples = @ExampleObject("user with email {newEmail} already exists"))
       )
   })
-  ResponseEntity<User> update(
+  ResponseEntity<UserDto> update(
       @Parameter(
           name = "userId",
           description = "수정할 사용자 ID",
@@ -155,7 +156,7 @@ public interface UserApi {
           content = @Content(examples = @ExampleObject(value = "UserStatus with userId {userId} not found"))
       )
   })
-  ResponseEntity<UserStatus> updateUserStatusByUserId(
+  ResponseEntity<UserStatusDto> updateUserStatusByUserId(
       @Parameter(
           name = "userId",
           description = "수정할 사용자 ID",

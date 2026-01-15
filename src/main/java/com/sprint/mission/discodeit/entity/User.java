@@ -32,7 +32,7 @@ public class User extends BaseUpdatableEntity {
   private String password;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "profile_id")
+  @JoinColumn(name = "profile_id", nullable = true)
   private BinaryContent profile;
 
   @OneToMany(mappedBy = "author")
@@ -52,5 +52,25 @@ public class User extends BaseUpdatableEntity {
     this.email = email;
     this.password = password;
     this.profile = profile;
+  }
+
+  public void update(
+      String username,
+      String email,
+      String password,
+      BinaryContent profile
+  ) {
+    if (username != null) {
+      this.username = username;
+    }
+    if (email != null) {
+      this.email = email;
+    }
+    if (password != null) {
+      this.password = password;
+    }
+    if (profile != null) {
+      this.profile = profile;
+    }
   }
 }
