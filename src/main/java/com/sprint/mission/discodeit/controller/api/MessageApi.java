@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.controller.api;
 
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.MessageDto;
 import com.sprint.mission.discodeit.entity.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +41,7 @@ public interface MessageApi {
           content = @Content(examples = @ExampleObject(value = "Channel | Author with id {channelId | authorId} not found"))
       ),
   })
-  ResponseEntity<Message> create(
+  ResponseEntity<MessageDto> create(
       @Parameter(
           name = "messageCreateRequest",
           description = "Message 생성 정보",
@@ -72,7 +73,7 @@ public interface MessageApi {
           content = @Content(examples = @ExampleObject(value = "Message with id {messageId} not found"))
       ),
   })
-  ResponseEntity<Message> update(
+  ResponseEntity<MessageDto> update(
       @Parameter(
           name = "messageId",
           description = "수정할 Message ID",
@@ -122,7 +123,7 @@ public interface MessageApi {
           content = @Content(array = @ArraySchema(schema = @Schema(implementation = Message.class)))
       )
   })
-  ResponseEntity<List<Message>> findAllByChannelId(
+  ResponseEntity<List<MessageDto>> findAllByChannelId(
       @Parameter(
           name = "channelId",
           description = "조회할 채널 ID",

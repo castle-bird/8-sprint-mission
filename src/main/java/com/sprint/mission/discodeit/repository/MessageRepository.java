@@ -8,6 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   List<Message> findAllByChannelId(UUID channelId);
-
-  void deleteAllByChannelId(UUID channelId);
 }
