@@ -69,7 +69,7 @@ public class BasicChannelService implements ChannelService {
           return ReadStatus.builder()
               .user(user)
               .channel(createdChannel)
-              .lastReadAt(Instant.MIN)
+              .lastReadAt(Instant.EPOCH)
               .build();
         })
         .forEach(readStatusRepository::save);
@@ -148,7 +148,7 @@ public class BasicChannelService implements ChannelService {
         .map(Message::getCreatedAt)
         .limit(1)
         .findFirst()
-        .orElse(Instant.MIN);
+        .orElse(Instant.EPOCH);
 
     // 참여자: 비공개채팅방만
     // 비공개 채팅방 참여자만 찾는 이유: 공개채팅방의 경우 굳이 찾을 필요가 없음. 너무 많고 오픈되어있어서

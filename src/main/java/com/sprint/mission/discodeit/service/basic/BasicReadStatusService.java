@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,6 +27,7 @@ public class BasicReadStatusService implements ReadStatusService {
   private final ChannelRepository channelRepository;
 
   @Override
+  @Transactional
   public ReadStatusDto create(ReadStatusCreateRequest request) {
 
     User user = userRepository.findById(request.userId())
@@ -34,12 +36,22 @@ public class BasicReadStatusService implements ReadStatusService {
         .orElseThrow(() -> new NoSuchElementException("Channel not found"));
 
     // 중복체크
-    if (readStatusRepository.existsByUserIdAndChannelId(user.getId(), channel.getId())) {
-      throw new IllegalArgumentException("ReadStatus 이미 있음");
-    }
+    ReadStatus findReadStatus = readStatusRepository.findByUserIdAndChannelId(user.getId(),
+        channel.getId()).orElse(null);
 
     Instant lastReadAt = request.lastReadAt();
 
+    // 있으면 업데이트만
+    if (findReadStatus != null) {
+      update(
+          findReadStatus.getId(),
+          ReadStatusUpdateRequest.builder()
+              .newLastReadAt(lastReadAt)
+              .build()
+      );
+    }
+
+    // 없으면 생성
     ReadStatus readStatus = ReadStatus.builder()
         .user(user)
         .channel(channel)

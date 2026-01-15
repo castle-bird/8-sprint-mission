@@ -202,7 +202,7 @@ public class BasicUserService implements UserService {
         .id(user.getId())
         .username(user.getUsername())
         .email(user.getEmail())
-        .profile(profileDto) // 변환된 DTO 사용
+        .profile(profileDto)
         .online(online)
         .build();
 
