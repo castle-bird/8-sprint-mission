@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS binary_contents
     file_name    VARCHAR(255) NOT NULL,
     size         BIGINT       NOT NULL,
     content_type VARCHAR(100) NOT NULL,
-    bytes        BYTEA
+    bytes        BYTEA        NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS messages
     updated_at timestamptz,
     content    TEXT,
     channel_id uuid        NOT NULL,
-    author_id  uuid        NOT NULL,
+    author_id  uuid,
     CONSTRAINT fk_channel FOREIGN KEY (channel_id) REFERENCES channels (id) ON DELETE CASCADE,
     CONSTRAINT fk_user FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE SET NULL
 );
@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS message_attachments
 (
     message_id    uuid NOT NULL,
     attachment_id uuid NOT NULL,
+    PRIMARY KEY (message_id, attachment_id),
     CONSTRAINT fk_message FOREIGN KEY (message_id) REFERENCES messages (id) ON DELETE CASCADE,
     CONSTRAINT fk_attachment FOREIGN KEY (attachment_id) REFERENCES binary_contents (id) ON DELETE CASCADE
 );
