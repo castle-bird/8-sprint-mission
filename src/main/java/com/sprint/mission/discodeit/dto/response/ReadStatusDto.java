@@ -2,17 +2,14 @@ package com.sprint.mission.discodeit.dto.response;
 
 import java.time.Instant;
 import java.util.UUID;
-import lombok.Builder;
 
-@Builder
-public record UserDto(
+public record ReadStatusDto(
     UUID id,
     Instant createdAt,
     Instant updatedAt,
-    String username,
-    String email,
-    UUID profileId,
-    Boolean online
+    UUID userID,
+    UUID channelId,
+    Instant lastReadAt
 ) {
 
 }

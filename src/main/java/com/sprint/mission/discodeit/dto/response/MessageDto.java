@@ -5,14 +5,12 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record UserDto(
+public record MessageDto(
     UUID id,
     Instant createdAt,
     Instant updatedAt,
-    String username,
-    String email,
-    UUID profileId,
-    Boolean online
+    String content,
+    UUID authorId
 ) {
 
 }
