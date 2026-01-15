@@ -8,9 +8,11 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,33 +28,58 @@ import org.springframework.stereotype.Service;
 public class BasicChannelService implements ChannelService {
 
   private final ChannelRepository channelRepository;
-  //
+  private final UserRepository userRepository;
   private final ReadStatusRepository readStatusRepository;
   private final MessageRepository messageRepository;
 
   @Override
-  public Channel create(PublicChannelCreateRequest request) {
+  public ChannelDto create(PublicChannelCreateRequest request) {
+    // 공개 채팅방 생성
+
     String name = request.name();
     String description = request.description();
-    Channel channel = new Channel(ChannelType.PUBLIC, name, description);
 
-    return channelRepository.save(channel);
+    Channel channel = Channel.builder()
+        .type(ChannelType.PUBLIC)
+        .name(name)
+        .description(description)
+        .build();
+
+    return toDto(channelRepository.save(channel));
   }
 
   @Override
-  public Channel create(PrivateChannelCreateRequest request) {
-    Channel channel = new Channel(ChannelType.PRIVATE, null, null);
+  public ChannelDto create(PrivateChannelCreateRequest request) {
+    // 비공개 채팅방 생성 1:1
+
+    Channel channel = Channel.builder()
+        .type(ChannelType.PRIVATE)
+        .name(null)
+        .description(null)
+        .build();
+
     Channel createdChannel = channelRepository.save(channel);
 
+    // 참여자 목록 돌면서 ReadStatus 작성
     request.participantIds().stream()
-        .map(userId -> new ReadStatus(userId, createdChannel.getId(), Instant.MIN))
+        .map(userId -> {
+          User user = userRepository.findById(userId)
+              .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사용자입니다."));
+
+          return ReadStatus.builder()
+              .user(user)
+              .channel(createdChannel)
+              .lastReadAt(Instant.MIN)
+              .build();
+        })
         .forEach(readStatusRepository::save);
 
-    return createdChannel;
+    return toDto(createdChannel);
   }
 
   @Override
   public ChannelDto find(UUID channelId) {
+    // 채널 찾기
     return channelRepository.findById(channelId)
         .map(this::toDto)
         .orElseThrow(
@@ -61,10 +88,15 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public List<ChannelDto> findAllByUserId(UUID userId) {
+    // 특정 유저가 참여 가능한 채팅방 다 찾기
+    // PUBLIC 기본 + PRIVATE
+
+    // 읽은 목록(ReadStatus)로 이미 참여한 방 찾기
     List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
-        .map(ReadStatus::getChannelId)
+        .map(readStatus -> readStatus.getChannel().getId())
         .toList();
 
+    // PUBLIC전체 + PRIVATE 추가
     return channelRepository.findAll().stream()
         .filter(channel ->
             channel.getType().equals(ChannelType.PUBLIC)
@@ -75,32 +107,41 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public Channel update(UUID channelId, PublicChannelUpdateRequest request) {
-    String newName = request.newName();
-    String newDescription = request.newDescription();
+  public ChannelDto update(UUID channelId, PublicChannelUpdateRequest request) {
+    // 수정
+
+    // 체널 체크
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(
             () -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+
+    // 비공개방이면 수정 불가
     if (channel.getType().equals(ChannelType.PRIVATE)) {
       throw new IllegalArgumentException("Private channel cannot be updated");
     }
+
+    String newName = request.newName();
+    String newDescription = request.newDescription();
+
     channel.update(newName, newDescription);
-    return channelRepository.save(channel);
+
+    return toDto(channelRepository.save(channel));
   }
 
   @Override
   public void delete(UUID channelId) {
+    // 삭제
+
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(
             () -> new NoSuchElementException("Channel with id " + channelId + " not found"));
-
-    messageRepository.deleteAllByChannelId(channel.getId());
-    readStatusRepository.deleteAllByChannelId(channel.getId());
 
     channelRepository.deleteById(channelId);
   }
 
   private ChannelDto toDto(Channel channel) {
+
+    // 채널의 가장 최근 메세지 조회
     Instant lastMessageAt = messageRepository.findAllByChannelId(channel.getId())
         .stream()
         .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
@@ -109,11 +150,14 @@ public class BasicChannelService implements ChannelService {
         .findFirst()
         .orElse(Instant.MIN);
 
+    // 참여자: 비공개채팅방만
+    // 비공개 채팅방 참여자만 찾는 이유: 공개채팅방의 경우 굳이 찾을 필요가 없음. 너무 많고 오픈되어있어서
     List<UUID> participantIds = new ArrayList<>();
+
     if (channel.getType().equals(ChannelType.PRIVATE)) {
       readStatusRepository.findAllByChannelId(channel.getId())
           .stream()
-          .map(ReadStatus::getUserId)
+          .map(readStatus -> readStatus.getUser().getId())
           .forEach(participantIds::add);
     }
 

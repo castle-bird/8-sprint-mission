@@ -67,6 +67,7 @@ public class BasicBinaryContentService implements BinaryContentService {
     return BinaryContentDto.builder()
         .id(binaryContent.getId())
         .fileName(binaryContent.getFileName())
+        .size(binaryContent.getSize())
         .contentType(binaryContent.getContentType())
         .build();
   }
