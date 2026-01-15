@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.controller.api;
 
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.ReadStatusDto;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +41,7 @@ public interface ReadStatusApi {
           content = @Content(examples = @ExampleObject(value = "ReadStatus with userId {userId} and channelId {channelId} already exists"))
       )
   })
-  ResponseEntity<ReadStatus> create(
+  ResponseEntity<ReadStatusDto> create(
       @Parameter(
           name = "request",
           description = "읽은 시간 생성",
@@ -65,7 +66,7 @@ public interface ReadStatusApi {
           content = @Content(examples = @ExampleObject(value = "ReadStatus with id {readStatusId} not found"))
       )
   })
-  ResponseEntity<ReadStatus> update(
+  ResponseEntity<ReadStatusDto> update(
       @Parameter(
           name = "readStatusId",
           description = "읽음 상태 ID",
@@ -94,7 +95,7 @@ public interface ReadStatusApi {
           content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReadStatus.class)))
       )
   })
-  ResponseEntity<List<ReadStatus>> findAllByUserId(
+  ResponseEntity<List<ReadStatusDto>> findAllByUserId(
       @Parameter(
           name = "userId",
           description = "접속 가능한 채널을 찾을 사용자 ID",
