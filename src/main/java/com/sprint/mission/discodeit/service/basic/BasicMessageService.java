@@ -120,7 +120,7 @@ public class BasicMessageService implements MessageService {
     Message message = messageRepository.findById(messageId)
         .orElseThrow(
             () -> new NoSuchElementException("Message with id " + messageId + " not found"));
-    
+
     messageRepository.deleteById(messageId);
   }
 

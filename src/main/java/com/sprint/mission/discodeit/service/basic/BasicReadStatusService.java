@@ -43,7 +43,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
     // 있으면 업데이트만
     if (findReadStatus != null) {
-      update(
+      return update(
           findReadStatus.getId(),
           ReadStatusUpdateRequest.builder()
               .newLastReadAt(lastReadAt)
@@ -80,22 +80,16 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
+  @Transactional
   public ReadStatusDto update(UUID readStatusId, ReadStatusUpdateRequest request) {
     // 수정 - 각 채널별 읽은 시간 최신화
+
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
-        .orElseThrow(
-            () -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
+        .orElseThrow(() -> new NoSuchElementException("ReadStatus not found"));
 
-    // 찾아서 읽은 시간만 바꾸고 저장
-    Instant newLastReadAt = request.newLastReadAt();
+    readStatus.update(request.newLastReadAt());
 
-    ReadStatus updatedReadStatus = ReadStatus.builder()
-        .user(readStatus.getUser())
-        .channel(readStatus.getChannel())
-        .lastReadAt(newLastReadAt)
-        .build();
-
-    return toDto(readStatusRepository.save(updatedReadStatus));
+    return toDto(readStatus); // save를 명시적으로 안 해도 @Transactional에 의해 저장됨
   }
 
   @Override
