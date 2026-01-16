@@ -30,7 +30,6 @@ public class BasicBinaryContentService implements BinaryContentService {
     BinaryContent binaryContent = BinaryContent.builder()
         .fileName(fileName)
         .contentType(contentType)
-        .bytes(bytes)
         .build();
 
     return binaryContentMapper.toBinaryContentDto(binaryContentRepository.save(binaryContent));
@@ -65,4 +64,12 @@ public class BasicBinaryContentService implements BinaryContentService {
     binaryContentRepository.deleteById(binaryContentId);
   }
 
+  @Override
+  public BinaryContentDto getBinaryContent(UUID id) {
+    BinaryContent content = binaryContentRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("파일이 존재하지 않습니다."));
+
+    // Mapper를 통해 Entity -> DTO 변환 (여기서 bytes는 null이어도 됨, 메타정보가 중요)
+    return binaryContentMapper.toBinaryContentDto(content);
+  }
 }

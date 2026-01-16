@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
@@ -29,6 +30,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final UserStatusRepository userStatusRepository;
   private final UserMapper userMapper;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
   @Transactional
@@ -61,10 +63,15 @@ public class BasicUserService implements UserService {
               .fileName(fileName)
               .size((long) bytes.length)
               .contentType(contentType)
-              .bytes(bytes)
               .build();
 
-          return binaryContentRepository.save(binaryContent);
+          // 프로필 이미지 정보만 저장
+          BinaryContent savedBinaryContent = binaryContentRepository.save(binaryContent);
+
+          // 프로필 이미지 로컬 저장
+          binaryContentStorage.put(savedBinaryContent.getId(), bytes);
+
+          return savedBinaryContent;
         }).orElse(null);
 
     // 비밀번호
@@ -149,10 +156,15 @@ public class BasicUserService implements UserService {
               .fileName(fileName)
               .size((long) bytes.length)
               .contentType(contentType)
-              .bytes(bytes)
               .build();
 
-          return binaryContentRepository.save(newProfile);
+          // 프로필 이미지 정보만 저장
+          BinaryContent savedNewProfile = binaryContentRepository.save(newProfile);
+
+          // 프로필 이미지 로컬 저장
+          binaryContentStorage.put(savedNewProfile.getId(), bytes);
+
+          return savedNewProfile;
         })
         .orElse(null);
 

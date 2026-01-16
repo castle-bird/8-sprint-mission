@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.controller.api.BinaryContentApi;
 import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
 import com.sprint.mission.discodeit.service.BinaryContentService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BinaryContentController implements BinaryContentApi {
 
   private final BinaryContentService binaryContentService;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
   @GetMapping("/{binaryContentId}")
@@ -35,5 +37,15 @@ public class BinaryContentController implements BinaryContentApi {
     List<BinaryContentDto> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
 
     return ResponseEntity.status(HttpStatus.OK).body(binaryContents);
+  }
+
+  @Override
+  @GetMapping("/{binaryContentId}/download")
+  public ResponseEntity<?> download(@PathVariable UUID binaryContentId) {
+
+    BinaryContentDto dto = binaryContentService.getBinaryContent(binaryContentId);
+
+    // 2. Storage에 다운로드 처리 위임
+    return binaryContentStorage.download(dto);
   }
 }

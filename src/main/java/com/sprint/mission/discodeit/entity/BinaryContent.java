@@ -26,18 +26,14 @@ public class BinaryContent extends BaseEntity {
   @Column(name = "content_type", nullable = false)
   private String contentType;
 
-  @Column(name = "bytes", nullable = false)
-  private byte[] bytes;
-
   @OneToOne(mappedBy = "profile")
   @JsonIgnore
   private User user;
 
   @Builder
-  public BinaryContent(String fileName, Long size, String contentType, byte[] bytes) {
+  public BinaryContent(String fileName, Long size, String contentType) {
     this.fileName = fileName;
     this.size = size;
     this.contentType = contentType;
-    this.bytes = bytes;
   }
 }

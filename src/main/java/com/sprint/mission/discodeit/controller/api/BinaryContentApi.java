@@ -63,4 +63,22 @@ public interface BinaryContentApi {
       )
       List<UUID> binaryContentIds
   );
+
+  @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지를 다운로드할 수 있다")
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200", description = "다운로드 성공"
+          //content = @Content(schema = @Schema(implementation = .class))
+      )
+  })
+  ResponseEntity<?> download(
+      @Parameter(
+          name = "binaryContentId",
+          description = "다운로드할 파일 아이디",
+          required = true,
+          in = ParameterIn.PATH,
+          schema = @Schema(implementation = UUID.class)
+      )
+      UUID binaryContentId
+  );
 }

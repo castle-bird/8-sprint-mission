@@ -16,6 +16,7 @@ import com.sprint.mission.discodeit.repository.MessageAttachmentsRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,6 +35,7 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentRepository binaryContentRepository;
   private final MessageAttachmentsRepository messageAttachmentsRepository;
   private final MessageMapper messageMapper;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
   @Transactional
@@ -64,7 +66,6 @@ public class BasicMessageService implements MessageService {
               .fileName(req.fileName())
               .contentType(req.contentType())
               .size((long) req.bytes().length)
-              .bytes(req.bytes())
               .build())
           .toList();
 
@@ -80,6 +81,14 @@ public class BasicMessageService implements MessageService {
 
       // MessageAttachments 일괄 저장
       messageAttachmentsRepository.saveAll(attachments);
+
+      // 파일 실제 저장
+      for (int i = 0; i < savedContents.size(); i++) {
+        BinaryContent content = savedContents.get(i);
+        byte[] bytes = binaryContentCreateRequests.get(i).bytes();
+
+        binaryContentStorage.put(content.getId(), bytes);
+      }
     }
 
     return messageMapper.toMessageDto(savedMessage);

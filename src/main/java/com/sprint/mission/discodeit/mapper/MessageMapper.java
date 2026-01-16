@@ -3,7 +3,6 @@ package com.sprint.mission.discodeit.mapper;
 import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.response.MessageDto;
 import com.sprint.mission.discodeit.dto.response.UserDto;
-import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.MessageAttachments;
 import com.sprint.mission.discodeit.entity.User;
@@ -17,17 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(
     componentModel = "spring",
     uses = {
-        UserMapper.class,
-        BinaryContentMapper.class
+        UserMapper.class
     }
 )
 public abstract class MessageMapper {
 
   private MessageAttachmentsRepository messageAttachmentsRepository;
+  private BinaryContentMapper binaryContentMapper;
 
   @Autowired
-  public void set(MessageAttachmentsRepository messageAttachmentsRepository) {
+  public void set(
+      MessageAttachmentsRepository messageAttachmentsRepository,
+      BinaryContentMapper binaryContentMapper
+  ) {
     this.messageAttachmentsRepository = messageAttachmentsRepository;
+    this.binaryContentMapper = binaryContentMapper;
   }
 
   // 메세지 DTO 리턴
@@ -45,18 +48,14 @@ public abstract class MessageMapper {
   @Named("getBinaryContentDto")
   protected List<BinaryContentDto> getBinaryContentDto(Message message) {
 
-    List<MessageAttachments> attachments = messageAttachmentsRepository.findByIdMessageId(
+    List<MessageAttachments> attachments = messageAttachmentsRepository.findAllByIdMessageId(
         message.getId());
 
     // 2. 중간 엔티티에서 실제 BinaryContent를 꺼내 DTO로 변환
     return attachments.stream()
         .map(MessageAttachments::getAttachment)
         .map(
-            this::toBinaryContentDto)
+            binaryContentMapper::toBinaryContentDto)
         .toList();
   }
-
-
-  @Named("toBinaryContentDto")
-  public abstract BinaryContentDto toBinaryContentDto(BinaryContent binaryContent);
 }

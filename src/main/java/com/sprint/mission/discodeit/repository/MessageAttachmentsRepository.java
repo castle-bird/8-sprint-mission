@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MessageAttachmentsRepository extends
     JpaRepository<MessageAttachments, MessageAttachmentsPK> {
 
-  List<MessageAttachments> findByIdMessageId(UUID messageId);
+  List<MessageAttachments> findAllByIdMessageId(UUID messageId);
 }
