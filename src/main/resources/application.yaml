@@ -41,11 +41,9 @@ springdoc:
     # API 정렬 기준
     operations-sorter: method   # HTTP 메서드의 알파벳 기준
   #    operations-sorter: alpha    # Java 메서드의 알파벳 기준
-
-
-  logging:
-    level:
-      # 실행되는 SQL 출력
-      org.hibernate.SQL: debug
-      # 바인딩되는 파라미터 출력
-      org.hibernate.orm.jdbc.bind: trace
+logging:
+  level:
+    # 실행되는 SQL 출력
+    org.hibernate.SQL: debug
+    # 바인딩되는 파라미터 출력
+    org.hibernate.orm.jdbc.bind: trace
