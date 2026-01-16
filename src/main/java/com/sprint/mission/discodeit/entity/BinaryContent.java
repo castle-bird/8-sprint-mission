@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sprint.mission.discodeit.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -27,7 +26,6 @@ public class BinaryContent extends BaseEntity {
   @Column(name = "content_type", nullable = false)
   private String contentType;
 
-  @Lob
   @Column(name = "bytes", nullable = false)
   private byte[] bytes;
 

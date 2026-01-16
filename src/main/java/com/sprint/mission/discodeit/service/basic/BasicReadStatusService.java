@@ -103,6 +103,8 @@ public class BasicReadStatusService implements ReadStatusService {
   private ReadStatusDto toDto(ReadStatus readStatus) {
     return ReadStatusDto.builder()
         .id(readStatus.getId())
+        .channelId(readStatus.getChannel().getId())
+        .userID(readStatus.getUser().getId())
         .lastReadAt(readStatus.getLastReadAt())
         .build();
   }

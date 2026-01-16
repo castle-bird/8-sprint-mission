@@ -127,8 +127,10 @@ public class BasicMessageService implements MessageService {
   private MessageDto toDto(Message message) {
     return MessageDto.builder()
         .id(message.getId())
-        .content(message.getContent())
         .createdAt(message.getCreatedAt())
+        .updatedAt(message.getUpdatedAt())
+        .content(message.getContent())
+        .channelId(message.getChannel().getId())
         .build();
   }
 }
