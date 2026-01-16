@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.dto.response.ReadStatusDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -25,6 +26,7 @@ public class BasicReadStatusService implements ReadStatusService {
   private final ReadStatusRepository readStatusRepository;
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
+  private final ReadStatusMapper readStatusMapper;
 
   @Override
   @Transactional
@@ -58,7 +60,7 @@ public class BasicReadStatusService implements ReadStatusService {
         .lastReadAt(lastReadAt)
         .build();
 
-    return toDto(readStatusRepository.save(readStatus));
+    return readStatusMapper.toReadStatusDto(readStatusRepository.save(readStatus));
   }
 
   @Override
@@ -67,7 +69,7 @@ public class BasicReadStatusService implements ReadStatusService {
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
         .orElseThrow(
             () -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
-    return toDto(readStatus);
+    return readStatusMapper.toReadStatusDto(readStatus);
   }
 
   @Override
@@ -75,7 +77,7 @@ public class BasicReadStatusService implements ReadStatusService {
     // 유저 아이디로 다 찾기
     // 즉, 유저가 참여한 모든 방 찾기
     return readStatusRepository.findAllByUserId(userId).stream()
-        .map(this::toDto)
+        .map(readStatusMapper::toReadStatusDto)
         .toList();
   }
 
@@ -89,7 +91,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
     readStatus.update(request.newLastReadAt());
 
-    return toDto(readStatus); // save를 명시적으로 안 해도 @Transactional에 의해 저장됨
+    return readStatusMapper.toReadStatusDto(readStatus); // save를 명시적으로 안 해도 @Transactional에 의해 저장됨
   }
 
   @Override
@@ -98,14 +100,5 @@ public class BasicReadStatusService implements ReadStatusService {
       throw new NoSuchElementException("ReadStatus with id " + readStatusId + " not found");
     }
     readStatusRepository.deleteById(readStatusId);
-  }
-
-  private ReadStatusDto toDto(ReadStatus readStatus) {
-    return ReadStatusDto.builder()
-        .id(readStatus.getId())
-        .channelId(readStatus.getChannel().getId())
-        .userID(readStatus.getUser().getId())
-        .lastReadAt(readStatus.getLastReadAt())
-        .build();
   }
 }

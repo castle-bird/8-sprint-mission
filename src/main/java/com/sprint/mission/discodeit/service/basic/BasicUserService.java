@@ -3,11 +3,11 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
-import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.response.UserDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -26,9 +26,9 @@ import org.springframework.stereotype.Service;
 public class BasicUserService implements UserService {
 
   private final UserRepository userRepository;
-  //
   private final BinaryContentRepository binaryContentRepository;
   private final UserStatusRepository userStatusRepository;
+  private final UserMapper userMapper;
 
   @Override
   @Transactional
@@ -90,13 +90,13 @@ public class BasicUserService implements UserService {
 
     userStatusRepository.save(userStatus);
 
-    return toDto(createdUser);
+    return userMapper.toUserDto(createdUser);
   }
 
   @Override
   public UserDto find(UUID userId) {
     return userRepository.findById(userId)
-        .map(this::toDto)
+        .map(userMapper::toUserDto)
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
   }
 
@@ -104,7 +104,7 @@ public class BasicUserService implements UserService {
   public List<UserDto> findAll() {
     return userRepository.findAll()
         .stream()
-        .map(this::toDto)
+        .map(userMapper::toUserDto)
         .toList();
   }
 
@@ -167,7 +167,7 @@ public class BasicUserService implements UserService {
         nullableNewProfile
     );
 
-    return toDto(userRepository.save(user));
+    return userMapper.toUserDto(userRepository.save(user));
   }
 
   @Override
@@ -179,33 +179,5 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
 
     userRepository.delete(user);
-  }
-
-  private UserDto toDto(User user) {
-
-    Boolean online = userStatusRepository.findByUserId(user.getId())
-        .map(UserStatus::isOnline)
-        .orElse(null);
-
-    // profile이 있을 때만 DTO로 변환
-    BinaryContentDto profileDto = Optional.ofNullable(user.getProfile())
-        .map(profile -> BinaryContentDto.builder()
-            .id(profile.getId())
-            .fileName(profile.getFileName())
-            .contentType(profile.getContentType())
-            .size(profile.getSize())
-            .bytes(profile.getBytes())
-            .build())
-        .orElse(null);
-
-    return UserDto.builder()
-        .id(user.getId())
-        .username(user.getUsername())
-        .email(user.getEmail())
-        .profile(profileDto)
-        .online(online)
-        .build();
-
-
   }
 }

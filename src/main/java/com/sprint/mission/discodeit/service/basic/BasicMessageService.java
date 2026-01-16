@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.MessageAttachments;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageAttachmentsRepository;
@@ -32,6 +33,7 @@ public class BasicMessageService implements MessageService {
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
   private final MessageAttachmentsRepository messageAttachmentsRepository;
+  private final MessageMapper messageMapper;
 
   @Override
   @Transactional
@@ -80,7 +82,7 @@ public class BasicMessageService implements MessageService {
       messageAttachmentsRepository.saveAll(attachments);
     }
 
-    return toDto(savedMessage);
+    return messageMapper.toMessageDto(savedMessage);
   }
 
   @Override
@@ -90,14 +92,14 @@ public class BasicMessageService implements MessageService {
         .orElseThrow(
             () -> new NoSuchElementException("Message with id " + messageId + " not found"));
 
-    return toDto(findMessage);
+    return messageMapper.toMessageDto(findMessage);
   }
 
   @Override
   public List<MessageDto> findAllByChannelId(UUID channelId) {
     // 특정 채널 모든 메세지 찾기
     return messageRepository.findAllByChannelId(channelId).stream()
-        .map(this::toDto)
+        .map(messageMapper::toMessageDto)
         .toList();
   }
 
@@ -111,7 +113,7 @@ public class BasicMessageService implements MessageService {
     String newContent = request.newContent();
     message.update(newContent);
 
-    return toDto(messageRepository.save(message));
+    return messageMapper.toMessageDto(messageRepository.save(message));
   }
 
   @Override
@@ -124,13 +126,5 @@ public class BasicMessageService implements MessageService {
     messageRepository.deleteById(messageId);
   }
 
-  private MessageDto toDto(Message message) {
-    return MessageDto.builder()
-        .id(message.getId())
-        .createdAt(message.getCreatedAt())
-        .updatedAt(message.getUpdatedAt())
-        .content(message.getContent())
-        .channelId(message.getChannel().getId())
-        .build();
-  }
+
 }

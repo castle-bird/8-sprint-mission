@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class BasicBinaryContentService implements BinaryContentService {
 
   private final BinaryContentRepository binaryContentRepository;
+  private final BinaryContentMapper binaryContentMapper;
 
   @Override
   public BinaryContentDto create(BinaryContentCreateRequest request) {
@@ -31,7 +33,7 @@ public class BasicBinaryContentService implements BinaryContentService {
         .bytes(bytes)
         .build();
 
-    return toDto(binaryContentRepository.save(binaryContent));
+    return binaryContentMapper.toBinaryContentDto(binaryContentRepository.save(binaryContent));
   }
 
   @Override
@@ -41,7 +43,7 @@ public class BasicBinaryContentService implements BinaryContentService {
         .orElseThrow(() -> new NoSuchElementException(
             "BinaryContent with id " + binaryContentId + " not found"));
 
-    return toDto(binaryContent);
+    return binaryContentMapper.toBinaryContentDto(binaryContent);
   }
 
   @Override
@@ -49,7 +51,7 @@ public class BasicBinaryContentService implements BinaryContentService {
     // 다건 찾기
 
     return binaryContentRepository.findAllById(binaryContentIds).stream()
-        .map(this::toDto)
+        .map(binaryContentMapper::toBinaryContentDto)
         .toList();
   }
 
@@ -63,12 +65,4 @@ public class BasicBinaryContentService implements BinaryContentService {
     binaryContentRepository.deleteById(binaryContentId);
   }
 
-  BinaryContentDto toDto(BinaryContent binaryContent) {
-    return BinaryContentDto.builder()
-        .id(binaryContent.getId())
-        .fileName(binaryContent.getFileName())
-        .size(binaryContent.getSize())
-        .contentType(binaryContent.getContentType())
-        .build();
-  }
 }
