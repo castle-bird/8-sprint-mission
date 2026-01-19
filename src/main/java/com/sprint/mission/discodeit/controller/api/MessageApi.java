@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller.api;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.MessageDto;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.entity.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,10 +122,10 @@ public interface MessageApi {
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "Message 목록 조회 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = Message.class)))
+          content = @Content(schema = @Schema(implementation = PageResponse.class))
       )
   })
-  ResponseEntity<List<MessageDto>> findAllByChannelId(
+  ResponseEntity<PageResponse<MessageDto>> findAllByChannelId(
       @Parameter(
           name = "channelId",
           description = "조회할 채널 ID",
@@ -131,6 +133,13 @@ public interface MessageApi {
           in = ParameterIn.QUERY,
           schema = @Schema(implementation = UUID.class)
       )
-      UUID channelId
+      UUID channelId,
+      @Parameter(
+          name = "pageable",
+          description = "메세지 조회 정보. 갯수/페이지/정렬기준",
+          in = ParameterIn.QUERY,
+          schema = @Schema(implementation = Pageable.class)
+      )
+      Pageable pageable
   );
 }

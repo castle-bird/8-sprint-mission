@@ -4,8 +4,10 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.MessageDto;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 
 public interface MessageService {
 
@@ -19,4 +21,6 @@ public interface MessageService {
   MessageDto update(UUID messageId, MessageUpdateRequest request);
 
   void delete(UUID messageId);
+
+  PageResponse<MessageDto> findPageByChannelId(UUID channelId, Pageable pageable);
 }

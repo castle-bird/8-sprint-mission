@@ -53,8 +53,8 @@ public class BasicChannelService implements ChannelService {
 
     Channel channel = Channel.builder()
         .type(ChannelType.PRIVATE)
-        .name(null)
-        .description(null)
+        .name("")
+        .description("")
         .build();
 
     Channel createdChannel = channelRepository.save(channel);

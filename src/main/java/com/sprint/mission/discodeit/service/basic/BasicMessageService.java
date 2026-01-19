@@ -4,12 +4,14 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.MessageDto;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.MessageAttachments;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
+import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageAttachmentsRepository;
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -36,6 +40,7 @@ public class BasicMessageService implements MessageService {
   private final MessageAttachmentsRepository messageAttachmentsRepository;
   private final MessageMapper messageMapper;
   private final BinaryContentStorage binaryContentStorage;
+  private final PageResponseMapper pageResponseMapper;
 
   @Override
   @Transactional
@@ -135,5 +140,11 @@ public class BasicMessageService implements MessageService {
     messageRepository.deleteById(messageId);
   }
 
+  @Override
+  public PageResponse<MessageDto> findPageByChannelId(UUID channelId, Pageable pageable) {
+    Slice<MessageDto> messageSlice = messageRepository.findAllByChannelId(channelId, pageable)
+        .map(messageMapper::toMessageDto);
 
+    return pageResponseMapper.fromSlice(messageSlice);
+  }
 }

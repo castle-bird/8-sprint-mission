@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.mapper;
 
 import com.sprint.mission.discodeit.dto.response.ChannelDto;
+import com.sprint.mission.discodeit.dto.response.UserDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
@@ -9,7 +10,6 @@ import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -20,15 +20,18 @@ public abstract class ChannelMapper {
 
   private MessageRepository messageRepository;
   private ReadStatusRepository readStatusRepository;
+  private UserMapper userMapper;
 
   @Autowired
-  public void set(MessageRepository messageRepository, ReadStatusRepository readStatusRepository) {
+  public void set(MessageRepository messageRepository, ReadStatusRepository readStatusRepository,
+      UserMapper userMapper) {
     this.messageRepository = messageRepository;
     this.readStatusRepository = readStatusRepository;
+    this.userMapper = userMapper;
   }
-
+  
   @Mapping(target = "lastMessageAt", expression = "java(getLastMessageAt(channel))")
-  @Mapping(target = "participantIds", expression = "java(getParticipantIds(channel))")
+  @Mapping(target = "participants", expression = "java(getParticipants(channel))")
   public abstract ChannelDto toChannelDto(Channel channel);
 
 
@@ -47,8 +50,8 @@ public abstract class ChannelMapper {
 
   // 참여자: 비공개 채팅방만
   // 비공개 채팅방 참여자만 찾는 이유: 공개채팅방의 경우 굳이 찾을 필요가 없음. 너무 많고 오픈되어있어서
-  @Named("getParticipantIds")
-  protected List<UUID> getParticipantIds(Channel channel) {
+  @Named("getParticipants")
+  protected List<UserDto> getParticipants(Channel channel) {
 
     // 비공개 채팅바이 아니면 빈배열 리턴
     if (channel.getType() != ChannelType.PRIVATE) {
@@ -57,7 +60,7 @@ public abstract class ChannelMapper {
 
     return readStatusRepository.findAllByChannelId(channel.getId())
         .stream()
-        .map(readStatus -> readStatus.getUser().getId())
+        .map(readStatus -> userMapper.toUserDto(readStatus.getUser()))
         .toList();
   }
 }
