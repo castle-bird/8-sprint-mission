@@ -6,9 +6,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public abstract class ReadStatusMapper {
+public interface ReadStatusMapper {
 
   @Mapping(target = "userId", source = "user.id")
   @Mapping(target = "channelId", source = "channel.id")
-  public abstract ReadStatusDto toReadStatusDto(ReadStatus readStatus);
+  ReadStatusDto toReadStatusDto(ReadStatus readStatus);
 }

@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public abstract class UserStatusMapper {
+public interface UserStatusMapper {
 
   @Mapping(target = "userId", source = "user.id")
-  public abstract UserStatusDto toUserStatusDto(UserStatus userStatus);
+  UserStatusDto toUserStatusDto(UserStatus userStatus);
 }
