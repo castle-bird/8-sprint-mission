@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.storage.impl;
 
-import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.FileOutputStream;
 import java.io.InputStream;

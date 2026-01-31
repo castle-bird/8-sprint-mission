@@ -1,7 +1,5 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
-import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +29,7 @@ public abstract class BinaryContentMapper {
     }
 
     try (InputStream inputStream = binaryContentStorage.get(binaryContent.getId())) {
-      
+
       return inputStream.readAllBytes();
     } catch (IOException e) {
       throw new RuntimeException(e);

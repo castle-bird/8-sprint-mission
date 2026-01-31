@@ -1,11 +1,5 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.response.BinaryContentDto;
-import com.sprint.mission.discodeit.dto.response.MessageDto;
-import com.sprint.mission.discodeit.dto.response.UserDto;
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.MessageAttachments;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.MessageAttachmentsRepository;
 import java.util.List;
 import org.mapstruct.Mapper;

@@ -1,10 +1,5 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.response.ChannelDto;
-import com.sprint.mission.discodeit.dto.response.UserDto;
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.ChannelType;
-import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import java.time.Instant;
@@ -29,7 +24,7 @@ public abstract class ChannelMapper {
     this.readStatusRepository = readStatusRepository;
     this.userMapper = userMapper;
   }
-  
+
   @Mapping(target = "lastMessageAt", expression = "java(getLastMessageAt(channel))")
   @Mapping(target = "participants", expression = "java(getParticipants(channel))")
   public abstract ChannelDto toChannelDto(Channel channel);
