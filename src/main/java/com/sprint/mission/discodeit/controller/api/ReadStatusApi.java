@@ -1,12 +1,10 @@
 package com.sprint.mission.discodeit.controller.api;
 
+import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.response.ReadStatusDto;
-import com.sprint.mission.discodeit.entity.ReadStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -17,20 +15,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "ReadStatus Controller", description = "User의 각체널 메세지 읽은 시간을 저장하는 Controller입니다.")
-@RequestMapping("/api/readStatuses")
+@Tag(name = "ReadStatus", description = "Message 읽음 상태 API")
 public interface ReadStatusApi {
 
-  @Operation(
-      summary = "사용자의 메세지 읽음 상태 생성",
-      description = "사용자가 채팅방의 글을 마지막으로 읽은 시간을 저장하는 컨트롤러입니다."
-  )
+  @Operation(summary = "Message 읽음 상태 생성")
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "201", description = "Message 읽음 상태가 성공적으로 생성됨",
-          content = @Content(schema = @Schema(implementation = ReadStatus.class))
+          content = @Content(schema = @Schema(implementation = ReadStatusDto.class))
       ),
       @ApiResponse(
           responseCode = "404", description = "Channel 또는 User를 찾을 수 없음",
@@ -42,24 +35,14 @@ public interface ReadStatusApi {
       )
   })
   ResponseEntity<ReadStatusDto> create(
-      @Parameter(
-          name = "request",
-          description = "읽은 시간 생성",
-          required = true,
-          in = ParameterIn.DEFAULT,
-          schema = @Schema(implementation = ReadStatusCreateRequest.class)
-      )
-      ReadStatusCreateRequest request
+      @Parameter(description = "Message 읽음 상태 생성 정보") ReadStatusCreateRequest request
   );
 
-  @Operation(
-      summary = "사용자의 메세지 읽음 상태 수정",
-      description = "사용자가 채팅방의 글을 마지막으로 읽은 시간을 업데이트하는 컨트롤러입니다."
-  )
+  @Operation(summary = "Message 읽음 상태 수정")
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "Message 읽음 상태가 성공적으로 수정됨",
-          content = @Content(schema = @Schema(implementation = ReadStatus.class))
+          content = @Content(schema = @Schema(implementation = ReadStatusDto.class))
       ),
       @ApiResponse(
           responseCode = "404", description = "Message 읽음 상태를 찾을 수 없음",
@@ -67,42 +50,18 @@ public interface ReadStatusApi {
       )
   })
   ResponseEntity<ReadStatusDto> update(
-      @Parameter(
-          name = "readStatusId",
-          description = "읽음 상태 ID",
-          required = true,
-          in = ParameterIn.PATH,
-          schema = @Schema(implementation = UUID.class)
-      )
-      UUID readStatusId,
-      @Parameter(
-          name = "request",
-          description = "읽은 가장 최근 시간",
-          required = true,
-          in = ParameterIn.DEFAULT,
-          schema = @Schema(implementation = ReadStatusUpdateRequest.class)
-      )
-      ReadStatusUpdateRequest request
+      @Parameter(description = "수정할 읽음 상태 ID") UUID readStatusId,
+      @Parameter(description = "수정할 읽음 상태 정보") ReadStatusUpdateRequest request
   );
 
-  @Operation(
-      summary = "특정 사용자가 접속 가능한 채널 모두 찾기",
-      description = "특정 사용자가 메세지 읽음 상태를 이용해 입장 가능한 채널의 목록을 나타냅니다."
-  )
+  @Operation(summary = "User의 Message 읽음 상태 목록 조회")
   @ApiResponses(value = {
       @ApiResponse(
           responseCode = "200", description = "Message 읽음 상태 목록 조회 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReadStatus.class)))
+          content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReadStatusDto.class)))
       )
   })
   ResponseEntity<List<ReadStatusDto>> findAllByUserId(
-      @Parameter(
-          name = "userId",
-          description = "접속 가능한 채널을 찾을 사용자 ID",
-          required = true,
-          in = ParameterIn.QUERY,
-          schema = @Schema(implementation = UUID.class)
-      )
-      UUID userId
+      @Parameter(description = "조회할 User ID") UUID userId
   );
-}
+} 

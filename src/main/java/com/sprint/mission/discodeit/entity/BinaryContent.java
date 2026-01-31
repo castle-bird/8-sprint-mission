@@ -1,10 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sprint.mission.discodeit.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,9 +24,6 @@ public class BinaryContent extends BaseEntity {
   @Column(name = "content_type", nullable = false)
   private String contentType;
 
-  @OneToOne(mappedBy = "profile")
-  @JsonIgnore
-  private User user;
 
   @Builder
   public BinaryContent(String fileName, Long size, String contentType) {
