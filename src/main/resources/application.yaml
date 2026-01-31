@@ -26,9 +26,10 @@ spring:
         default_batch_fetch_size: 100 # N + 1 쿼리 묶음 100개
 
 discodeit:
-  repository:
-    type: file   # jcf | file
-    file-directory: .discodeit
+  storage:
+    type: local
+    local:
+      root-path: .discodeit/storage
 
 
 # swagger config

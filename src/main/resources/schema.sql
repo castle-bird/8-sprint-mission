@@ -1,15 +1,6 @@
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS binary_contents CASCADE;
-DROP TABLE IF EXISTS user_status CASCADE;
-DROP TABLE IF EXISTS channels CASCADE;
-DROP TABLE IF EXISTS messages CASCADE;
-DROP TABLE IF EXISTS read_status CASCADE;
-DROP TABLE IF EXISTS message_attachments CASCADE;
-DROP TYPE IF EXISTS channel_type CASCADE;
-
 CREATE TABLE IF NOT EXISTS binary_contents
 (
-    id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id           uuid PRIMARY KEY,
     created_at   timestamptz  NOT NULL,
     file_name    VARCHAR(255) NOT NULL,
     size         BIGINT       NOT NULL,
@@ -18,7 +9,7 @@ CREATE TABLE IF NOT EXISTS binary_contents
 
 CREATE TABLE IF NOT EXISTS users
 (
-    id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id         uuid PRIMARY KEY,
     created_at timestamptz         NOT NULL,
     updated_at timestamptz,
     username   VARCHAR(50) UNIQUE  NOT NULL,
@@ -30,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS user_status
 (
-    id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id             uuid PRIMARY KEY,
     created_at     timestamptz NOT NULL,
     updated_at     timestamptz,
     user_id        uuid        NOT NULL UNIQUE,
@@ -42,7 +33,7 @@ CREATE TABLE IF NOT EXISTS user_status
 CREATE TYPE channel_type AS ENUM ('PUBLIC', 'PRIVATE');
 CREATE TABLE IF NOT EXISTS channels
 (
-    id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id          uuid PRIMARY KEY,
     created_at  timestamptz  NOT NULL,
     updated_at  timestamptz,
     name        VARCHAR(100),
@@ -52,7 +43,7 @@ CREATE TABLE IF NOT EXISTS channels
 
 CREATE TABLE IF NOT EXISTS messages
 (
-    id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id         uuid PRIMARY KEY,
     created_at timestamptz NOT NULL,
     updated_at timestamptz,
     content    TEXT,
@@ -64,7 +55,7 @@ CREATE TABLE IF NOT EXISTS messages
 
 CREATE TABLE IF NOT EXISTS read_status
 (
-    id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id           uuid PRIMARY KEY,
     created_at   timestamptz NOT NULL,
     updated_at   timestamptz,
     user_id      uuid        NOT NULL,
@@ -84,3 +75,9 @@ CREATE TABLE IF NOT EXISTS message_attachments
 );
 
 
+-- 메시지 조회 (채널별, 시간순)
+CREATE INDEX idx_messages_channel_created ON messages (channel_id, created_at DESC);
+-- 읽기 상태 조회 (사용자+채널)
+CREATE INDEX idx_read_status_user_channel ON read_status (user_id, channel_id);
+-- 첨부파일 조회
+CREATE INDEX idx_message_attachments_message ON message_attachments (message_id);
