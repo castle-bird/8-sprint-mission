@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.service.impl;
 
 import com.sprint.mission.discodeit.dto.request.LoginRequest;
-import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.AuthService;
