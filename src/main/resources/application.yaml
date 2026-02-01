@@ -24,6 +24,8 @@ spring:
         highlight_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 100 # N + 1 쿼리 묶음 100개
+    hibernate:
+      ddl-auto: update
 
 discodeit:
   storage:
