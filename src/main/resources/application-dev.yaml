@@ -19,7 +19,33 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
 logging:
   level:
+    root: debug
     # 실행되는 SQL 출력
     org.hibernate.SQL: debug
     # 바인딩되는 파라미터 출력
     org.hibernate.orm.jdbc.bind: debug
+
+
+
+# swagger config
+# https://springdoc.org/#properties
+springdoc:
+  api-docs:
+    # OpenAPI 명세서 경로(JSON)
+    path: /v3/api-docs
+  swagger-ui:
+    # OpenAPI 명세서 경로(HTML)
+    path: /swagger-ui.html
+    # 요청 응답 시간 표시
+    display-request-duration: true
+    # API 정렬 기준
+    operations-sorter: method   # HTTP 메서드의 알파벳 기준
+  #    operations-sorter: alpha    # Java 메서드의 알파벳 기준
+
+
+discodeit:
+  storage:
+    type: local
+    local:
+      root-path: .discodeit/storage
+

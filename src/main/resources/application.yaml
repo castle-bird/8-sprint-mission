@@ -11,23 +11,3 @@ spring:
       maxFileSize: 10MB # 파일 하나의 최대 크기
       maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
 
-discodeit:
-  storage:
-    type: local
-    local:
-      root-path: .discodeit/storage
-
-# swagger config
-# https://springdoc.org/#properties
-springdoc:
-  api-docs:
-    # OpenAPI 명세서 경로(JSON)
-    path: /v3/api-docs
-  swagger-ui:
-    # OpenAPI 명세서 경로(HTML)
-    path: /swagger-ui.html
-    # 요청 응답 시간 표시
-    display-request-duration: true
-    # API 정렬 기준
-    operations-sorter: method   # HTTP 메서드의 알파벳 기준
-  #    operations-sorter: alpha    # Java 메서드의 알파벳 기준

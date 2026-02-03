@@ -24,6 +24,12 @@ logging:
   level:
     root: info
     # 실행되는 SQL 출력
-    org.hibernate.SQL: warn
+    org.hibernate.SQL: info
     # 바인딩되는 파라미터 출력
-    org.hibernate.orm.jdbc.bind: warn
+    org.hibernate.orm.jdbc.bind: info
+
+springdoc:
+  api-docs:
+    enabled: false  # JSON 명세서 비활성화
+  swagger-ui:
+    enabled: false  # HTML 화면 비활성화
