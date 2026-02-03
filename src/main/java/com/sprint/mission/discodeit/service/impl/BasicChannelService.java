@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.impl;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
@@ -31,6 +32,7 @@ public class BasicChannelService implements ChannelService {
   private final UserRepository userRepository;
   private final ChannelMapper channelMapper;
 
+  @LogExecution(action = "Service", purpose = "공개 채널 생성")
   @Transactional
   @Override
   public ChannelDto create(PublicChannelCreateRequest request) {
@@ -42,6 +44,7 @@ public class BasicChannelService implements ChannelService {
     return channelMapper.toDto(channel);
   }
 
+  @LogExecution(action = "Service", purpose = "비공개 채널 생성")
   @Transactional
   @Override
   public ChannelDto create(PrivateChannelCreateRequest request) {
@@ -79,6 +82,7 @@ public class BasicChannelService implements ChannelService {
         .toList();
   }
 
+  @LogExecution(action = "Service", purpose = "공개 채널 수정")
   @Transactional
   @Override
   public ChannelDto update(UUID channelId, PublicChannelUpdateRequest request) {
@@ -94,6 +98,7 @@ public class BasicChannelService implements ChannelService {
     return channelMapper.toDto(channel);
   }
 
+  @LogExecution(action = "Service", purpose = "채널 삭제")
   @Transactional
   @Override
   public void delete(UUID channelId) {

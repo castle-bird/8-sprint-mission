@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.impl;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
@@ -41,6 +42,7 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentRepository binaryContentRepository;
   private final PageResponseMapper pageResponseMapper;
 
+  @LogExecution(action = "Service", purpose = "메세지 생성")
   @Transactional
   @Override
   public MessageDto create(MessageCreateRequest messageCreateRequest,
@@ -109,6 +111,7 @@ public class BasicMessageService implements MessageService {
     return pageResponseMapper.fromSlice(slice, nextCursor);
   }
 
+  @LogExecution(action = "Service", purpose = "메세지 수정")
   @Transactional
   @Override
   public MessageDto update(UUID messageId, MessageUpdateRequest request) {
@@ -120,6 +123,7 @@ public class BasicMessageService implements MessageService {
     return messageMapper.toDto(message);
   }
 
+  @LogExecution(action = "Service", purpose = "메세지 삭제")
   @Transactional
   @Override
   public void delete(UUID messageId) {

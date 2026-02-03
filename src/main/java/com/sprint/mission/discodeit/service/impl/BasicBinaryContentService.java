@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.impl;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
@@ -22,6 +23,7 @@ public class BasicBinaryContentService implements BinaryContentService {
   private final BinaryContentMapper binaryContentMapper;
   private final BinaryContentStorage binaryContentStorage;
 
+  @LogExecution(action = "Service", purpose = "파일 업로드")
   @Transactional
   @Override
   public BinaryContentDto create(BinaryContentCreateRequest request) {

@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.impl;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
@@ -32,6 +33,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
 
+  @LogExecution(action = "Service", purpose = "유저 생성")
   @Transactional
   @Override
   public UserDto create(UserCreateRequest userCreateRequest,
@@ -83,6 +85,7 @@ public class BasicUserService implements UserService {
         .toList();
   }
 
+  @LogExecution(action = "Service", purpose = "유저 수정")
   @Transactional
   @Override
   public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest,
@@ -119,6 +122,7 @@ public class BasicUserService implements UserService {
     return userMapper.toDto(user);
   }
 
+  @LogExecution(action = "Service", purpose = "유저 삭제")
   @Transactional
   @Override
   public void delete(UUID userId) {
