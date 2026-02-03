@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.controller.api.BinaryContentApi;
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.service.BinaryContentService;
@@ -41,6 +42,7 @@ public class BinaryContentController implements BinaryContentApi {
         .body(binaryContents);
   }
 
+  @LogExecution(action = "Controller", purpose = "파일 다운로드")
   @GetMapping(path = "{binaryContentId}/download")
   public ResponseEntity<?> download(
       @PathVariable("binaryContentId") UUID binaryContentId) {

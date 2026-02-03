@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.controller.api.MessageApi;
 import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
@@ -39,6 +40,7 @@ public class MessageController implements MessageApi {
 
   private final MessageService messageService;
 
+  @LogExecution(action = "Controller", purpose = "메세지 생성")
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<MessageDto> create(
       @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
@@ -65,6 +67,7 @@ public class MessageController implements MessageApi {
         .body(createdMessage);
   }
 
+  @LogExecution(action = "Controller", purpose = "메세지 수정")
   @PatchMapping(path = "{messageId}")
   public ResponseEntity<MessageDto> update(@PathVariable("messageId") UUID messageId,
       @RequestBody MessageUpdateRequest request) {
@@ -74,6 +77,7 @@ public class MessageController implements MessageApi {
         .body(updatedMessage);
   }
 
+  @LogExecution(action = "Controller", purpose = "메세지 삭제")
   @DeleteMapping(path = "{messageId}")
   public ResponseEntity<Void> delete(@PathVariable("messageId") UUID messageId) {
     messageService.delete(messageId);

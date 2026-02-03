@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.controller.api.ChannelApi;
 import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
@@ -28,6 +29,7 @@ public class ChannelController implements ChannelApi {
 
   private final ChannelService channelService;
 
+  @LogExecution(action = "Controller", purpose = "공개 채팅방 생성")
   @PostMapping(path = "public")
   public ResponseEntity<ChannelDto> create(@RequestBody PublicChannelCreateRequest request) {
     ChannelDto createdChannel = channelService.create(request);
@@ -36,6 +38,7 @@ public class ChannelController implements ChannelApi {
         .body(createdChannel);
   }
 
+  @LogExecution(action = "Controller", purpose = "비공개 채팅방 생성")
   @PostMapping(path = "private")
   public ResponseEntity<ChannelDto> create(@RequestBody PrivateChannelCreateRequest request) {
     ChannelDto createdChannel = channelService.create(request);
@@ -44,6 +47,7 @@ public class ChannelController implements ChannelApi {
         .body(createdChannel);
   }
 
+  @LogExecution(action = "Controller", purpose = "공개 채팅방 수정")
   @PatchMapping(path = "{channelId}")
   public ResponseEntity<ChannelDto> update(@PathVariable("channelId") UUID channelId,
       @RequestBody PublicChannelUpdateRequest request) {
@@ -53,6 +57,7 @@ public class ChannelController implements ChannelApi {
         .body(updatedChannel);
   }
 
+  @LogExecution(action = "Controller", purpose = "채팅방 삭제")
   @DeleteMapping(path = "{channelId}")
   public ResponseEntity<Void> delete(@PathVariable("channelId") UUID channelId) {
     channelService.delete(channelId);

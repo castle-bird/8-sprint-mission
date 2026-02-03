@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.aspect.LogExecution;
 import com.sprint.mission.discodeit.controller.api.UserApi;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.data.UserStatusDto;
@@ -36,6 +37,7 @@ public class UserController implements UserApi {
   private final UserService userService;
   private final UserStatusService userStatusService;
 
+  @LogExecution(action = "Controller", purpose = "사용자 생성")
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   @Override
   public ResponseEntity<UserDto> create(
@@ -50,6 +52,7 @@ public class UserController implements UserApi {
         .body(createdUser);
   }
 
+  @LogExecution(action = "Controller", purpose = "사용자 수정")
   @PatchMapping(
       path = "{userId}",
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
@@ -68,6 +71,7 @@ public class UserController implements UserApi {
         .body(updatedUser);
   }
 
+  @LogExecution(action = "Controller", purpose = "사용자 삭제")
   @DeleteMapping(path = "{userId}")
   @Override
   public ResponseEntity<Void> delete(@PathVariable("userId") UUID userId) {
