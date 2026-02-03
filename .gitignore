@@ -49,4 +49,4 @@ bin/
 uploads
 
 ### Log ###
-./.logs
+.logs
