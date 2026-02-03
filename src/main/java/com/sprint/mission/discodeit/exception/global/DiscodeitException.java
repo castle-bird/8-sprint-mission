@@ -3,7 +3,9 @@ package com.sprint.mission.discodeit.exception.global;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public class DiscodeitException extends RuntimeException {
 
   private final Instant timestamp;
@@ -22,4 +24,5 @@ public class DiscodeitException extends RuntimeException {
   public DiscodeitException(ErrorCode errorCode) {
     this(errorCode, Map.of());
   }
+
 }

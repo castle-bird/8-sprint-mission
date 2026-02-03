@@ -4,7 +4,7 @@ public enum ErrorCode {
   // 사용자 에러
   USER_ERROR("사용자 에러"),
   USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
-  USER_DUPLICATE("이미 존재하는 사용자 이름입니다."),
+  USER_DUPLICATE("이미 존재하는 사용자 정보입니다."),
 
   // 체널 에러
   CHANNEL_ERROR("채널을 에러"),

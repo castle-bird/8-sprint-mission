@@ -46,7 +46,7 @@ public class LoggingAspect {
     } catch (Exception e) {
       // 예외 시 ERROR 로그
       log.error("[{}] {}#{} 실패 - 에러: {}",
-          action.isEmpty() ? "SERVICE" : action,
+          action,
           joinPoint.getTarget().getClass().getSimpleName(),
           methodName, e.getMessage(), e);
       throw e;
