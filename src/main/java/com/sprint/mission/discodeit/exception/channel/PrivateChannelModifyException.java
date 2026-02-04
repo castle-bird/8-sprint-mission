@@ -1,0 +1,16 @@
+package com.sprint.mission.discodeit.exception.channel;
+
+import com.sprint.mission.discodeit.exception.global.ErrorCode;
+import com.sprint.mission.discodeit.exception.user.UserException;
+import java.util.Map;
+
+public class PrivateChannelModifyException extends UserException {
+
+  public PrivateChannelModifyException() {
+    super(ErrorCode.PRIVATE_CHANNEL_UPDATE);
+  }
+
+  public PrivateChannelModifyException(Map<String, Object> details) {
+    super(ErrorCode.PRIVATE_CHANNEL_UPDATE, details);
+  }
+}

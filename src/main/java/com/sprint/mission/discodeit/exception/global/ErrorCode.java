@@ -7,7 +7,7 @@ public enum ErrorCode {
   USER_DUPLICATE("이미 존재하는 사용자 정보입니다."),
 
   // 체널 에러
-  CHANNEL_ERROR("채널을 에러"),
+  CHANNEL_ERROR("채널 에러"),
   CHANNEL_NOT_FOUND("채널을 찾을 수 없습니다."),
   PRIVATE_CHANNEL_UPDATE("비공개 채널은 수정 불가능합니다."),
 
