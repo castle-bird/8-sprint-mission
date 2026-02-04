@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/discodeit?currentSchema=discodeit
-    username: discodeit_user
-    password: discodeit1234
+    # 추후 배포때 채워넣기
+    url: jdbc:postgresql://${}:5432/discodeit?currentSchema=discodeit
+    username: ${}
+    password: ${}
     driver-class-name: org.postgresql.Driver
     # PostgreSQL createClob() 경고 메시지 제거
     hikari:
@@ -10,7 +11,7 @@ spring:
   # jpa config
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     generate-ddl: false
     database: PostgreSQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -33,3 +34,25 @@ springdoc:
     enabled: false  # JSON 명세서 비활성화
   swagger-ui:
     enabled: false  # HTML 화면 비활성화
+
+# Spring Boot Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        # 운영에서는 모니터링에 꼭 필요한 엔드포인트만 노출
+        # 보통 loggers는 보안상 제외하거나 별도의 인증 장치를 둔다고 함
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      # 운영에서는 서버가 살았는지 죽었는지만 확인 (상세 정보 비공개)
+      show-details: never
+      show-components: always
+    loggers:
+      access: none        # loggers 엔드포인트 접근 완전 차단
+
+# 추후 AWS에 파일 저장할때 경로
+discodeit:
+  storage:
+    type: s3
+    path: discodeit-storage-bucket
