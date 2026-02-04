@@ -1,0 +1,16 @@
+package com.sprint.mission.discodeit.exception.message;
+
+import com.sprint.mission.discodeit.exception.global.ErrorCode;
+import com.sprint.mission.discodeit.exception.user.UserException;
+import java.util.Map;
+
+public class MessageNotFoundException extends UserException {
+
+  public MessageNotFoundException() {
+    super(ErrorCode.MESSAGE_NOT_FOUND);
+  }
+
+  public MessageNotFoundException(Map<String, Object> details) {
+    super(ErrorCode.MESSAGE_NOT_FOUND, details);
+  }
+}
