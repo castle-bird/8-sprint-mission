@@ -135,7 +135,7 @@ public class BasicUserService implements UserService {
   @Transactional
   @Override
   public void delete(UUID userId) {
-    if (userRepository.existsById(userId)) {
+    if (!userRepository.existsById(userId)) {
       throw new UserNotFoundException(Map.of("requestedId", userId));
     }
 
