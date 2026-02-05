@@ -10,6 +10,11 @@ spring:
     multipart:
       maxFileSize: 10MB # 파일 하나의 최대 크기
       maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
+  boot:
+    admin:
+      client:
+        instance:
+          name: discodeit
 
 # 애플리케이션 정보 (Actuator info 엔드포인트용)
 # info: 로 시작하면 Actuator가 알아서 내용 가져간다고함

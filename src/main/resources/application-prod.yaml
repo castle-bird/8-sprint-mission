@@ -8,6 +8,10 @@ spring:
     # PostgreSQL createClob() 경고 메시지 제거
     hikari:
       connection-init-sql: SET SESSION hibernate.jdbc.lob.non_contextual_creation=true
+  boot:
+    admin:
+      client:
+        url: ${SPRING_BOOT_ADMIN_CLIENT_URL}
   # jpa config
   jpa:
     hibernate:
