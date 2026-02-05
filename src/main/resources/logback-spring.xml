@@ -8,7 +8,7 @@
   <!-- 로그 출력 형식(pattern)을 정의 -->
   <!-- 예시: 2026-02-03 15:35:01.123 [main] INFO com.example.DemoApplication - 로그 메시지 -->
   <property name="LOG_PATTERN"
-    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %yellow(%logger{36}) - %msg%n"/>
+    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %yellow(%logger{36}) [%X{request_id:-} | %X{request_method:-} | %X{request_url:-}] - %msg%n"/>
 
   <!-- 콘솔에 로그를 출력하는 Appender 설정 -->
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
