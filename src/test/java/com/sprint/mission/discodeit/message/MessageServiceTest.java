@@ -273,4 +273,25 @@ public class MessageServiceTest {
       assertEquals(result.content(), message.getContent()); // 메세지 수정 됐는지
     }
   }
+
+  @Nested
+  @DisplayName("메세지 삭제 테스트")
+  class message_delete {
+
+    @Test
+    @DisplayName("성공: 메세지가 삭제 된다.")
+    void delete_message() {
+      // Given
+      UUID messageId = UUID.randomUUID();
+      given(
+          messageRepository.existsById(messageId)
+      ).willReturn(true);
+
+      // When
+      messageService.delete(messageId);
+
+      // Then
+      then(messageRepository).should().deleteById(messageId);
+    }
+  }
 }

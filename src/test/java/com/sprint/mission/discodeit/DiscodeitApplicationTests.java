@@ -14,6 +14,7 @@ import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
@@ -23,6 +24,7 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.impl.BasicBinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,9 +90,9 @@ class DiscodeitApplicationTests {
     );
     MockMultipartFile profilePart = new MockMultipartFile(
         "profile",
-        "",
+        "rex-profile.png",
         MediaType.IMAGE_PNG_VALUE,
-        new byte[0]
+        "test-image-content".getBytes()
     );
 
     MvcResult userResult = mockMvc.perform(multipart("/api/users")
@@ -99,15 +101,11 @@ class DiscodeitApplicationTests {
         .andExpect(status().isCreated())
         .andReturn();
 
-    // HTTP 응답을 그냥 문자열로 가져옴 (JSON형태긴함)
     String userResponse = userResult.getResponse().getContentAsString();
-
-    // objectMapper로 JSON으로 만들기
     UserDto res = objectMapper.readValue(userResponse, UserDto.class);
-
     this.testUserId = res.id();
 
-    // 테스트용 채널 생성
+    // 테스트용 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
         "Rex 채팅방",
         "Rex 채팅방 입니다.");
@@ -119,9 +117,7 @@ class DiscodeitApplicationTests {
         .andReturn();
 
     String channelResponse = channelResult.getResponse().getContentAsString();
-
     ChannelDto channelDto = objectMapper.readValue(channelResponse, ChannelDto.class);
-
     this.testChannelId = channelDto.id();
   }
 
@@ -130,10 +126,10 @@ class DiscodeitApplicationTests {
   class UserApiTest {
 
     @Test
-    @DisplayName("유저 정보 수정 및 조회")
+    @DisplayName("유저 정보 전체 수정 및 프로필 이미지 변경")
     void update_and_get_user() throws Exception {
-      // 수정 요청 DTO
-      UserUpdateRequest updateRequest = new UserUpdateRequest("Rex - 수정", null, null);
+      UserUpdateRequest updateRequest = new UserUpdateRequest("Rex - 수정", "updated@gmail.com",
+          "newpassword123");
 
       MockMultipartFile updatePart = new MockMultipartFile(
           "userUpdateRequest",
@@ -142,15 +138,23 @@ class DiscodeitApplicationTests {
           objectMapper.writeValueAsBytes(updateRequest)
       );
 
+      MockMultipartFile newProfilePart = new MockMultipartFile(
+          "profile",
+          "new-profile.png",
+          MediaType.IMAGE_PNG_VALUE,
+          "new-image-content".getBytes()
+      );
+
       mockMvc.perform(multipart("/api/users/{userId}", testUserId)
               .file(updatePart)
+              .file(newProfilePart)
               .with(request -> {
-                // multipart의 기본 옵션이 POST라 PATCH로 바꿔야함
                 request.setMethod("PATCH");
                 return request;
               }))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.username").value("Rex - 수정"));
+          .andExpect(jsonPath("$.username").value("Rex - 수정"))
+          .andExpect(jsonPath("$.email").value("updated@gmail.com"));
     }
 
     @Test
@@ -159,7 +163,6 @@ class DiscodeitApplicationTests {
       mockMvc.perform(delete("/api/users/{userId}", testUserId))
           .andExpect(status().isNoContent());
 
-      // 삭제 확인 (DB 조회 시 없어야 함)
       assertThat(userRepository.findById(testUserId)).isEmpty();
     }
   }
@@ -169,17 +172,39 @@ class DiscodeitApplicationTests {
   class ChannelApiTest {
 
     @Test
-    @DisplayName("채널 정보 수정")
+    @DisplayName("비공개 채널 생성 및 조회")
+    void create_private_channel() throws Exception {
+      // 새로운 유저 생성 (참가자용)
+      UserCreateRequest user2Request = new UserCreateRequest("Jessie", "jessie@gmail.com",
+          "password");
+      String user2Res = mockMvc.perform(multipart("/api/users")
+              .file(new MockMultipartFile("userCreateRequest", "", MediaType.APPLICATION_JSON_VALUE,
+                  objectMapper.writeValueAsBytes(user2Request)))
+              .file(new MockMultipartFile("profile", "", MediaType.IMAGE_PNG_VALUE, new byte[0])))
+          .andReturn().getResponse().getContentAsString();
+      UUID user2Id = objectMapper.readValue(user2Res, UserDto.class).id();
+
+      PrivateChannelCreateRequest privateRequest = new PrivateChannelCreateRequest(
+          List.of(testUserId, user2Id));
+
+      mockMvc.perform(post("/api/channels/private")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(privateRequest)))
+          .andExpect(status().isCreated())
+          .andExpect(jsonPath("$.type").value("PRIVATE"))
+          .andExpect(jsonPath("$.participants.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("공개 채널 정보 수정")
     void update_channel() throws Exception {
-      PublicChannelUpdateRequest updateRequest = new PublicChannelUpdateRequest("Rex 채팅방 - 수정",
-          "Rex 채팅방 입니다. - 수정");
+      PublicChannelUpdateRequest updateRequest = new PublicChannelUpdateRequest("수정된 방", "수정된 설명");
 
       mockMvc.perform(patch("/api/channels/{channelId}", testChannelId)
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(updateRequest)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.name").value("Rex 채팅방 - 수정"))
-          .andExpect(jsonPath("$.description").value("Rex 채팅방 입니다. - 수정"));
+          .andExpect(jsonPath("$.name").value("수정된 방"));
     }
 
     @Test
@@ -215,25 +240,43 @@ class DiscodeitApplicationTests {
     }
 
     @Test
-    @DisplayName("메세지 수정 및 목록 조회")
-    void update_and_list_messages() throws Exception {
-      // 수정
-      MessageUpdateRequest updateRequest = new MessageUpdateRequest("메세지 입니다. - 수정");
+    @DisplayName("첨부파일 포함 메시지 생성 및 목록 조회")
+    void create_message_with_files_and_list() throws Exception {
+      MessageCreateRequest request = new MessageCreateRequest("파일첨부 메시지", testChannelId,
+          testUserId);
+      MockMultipartFile requestPart = new MockMultipartFile("messageCreateRequest", "",
+          MediaType.APPLICATION_JSON_VALUE, objectMapper.writeValueAsBytes(request));
+      MockMultipartFile file1 = new MockMultipartFile("attachments", "file1.png",
+          MediaType.IMAGE_PNG_VALUE, "data1".getBytes());
+      MockMultipartFile file2 = new MockMultipartFile("attachments", "file2.txt",
+          MediaType.TEXT_PLAIN_VALUE, "data2".getBytes());
+
+      mockMvc.perform(multipart("/api/messages")
+              .file(requestPart)
+              .file(file1)
+              .file(file2))
+          .andExpect(status().isCreated())
+          .andExpect(jsonPath("$.content").value("파일첨부 메시지"));
+
+      mockMvc.perform(get("/api/messages")
+              .param("channelId", testChannelId.toString()))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("메시지 수정")
+    void update_message() throws Exception {
+      MessageUpdateRequest updateRequest = new MessageUpdateRequest("수정된 메시지 내용");
       mockMvc.perform(patch("/api/messages/{messageId}", testMessageId)
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(updateRequest)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.content").value("메세지 입니다. - 수정"));
-
-      // 목록 조회
-      mockMvc.perform(get("/api/messages")
-              .param("channelId", testChannelId.toString()))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.content[0].content").value("메세지 입니다. - 수정"));
+          .andExpect(jsonPath("$.content").value("수정된 메시지 내용"));
     }
 
     @Test
-    @DisplayName("메세지 삭제")
+    @DisplayName("메시지 삭제")
     void delete_message() throws Exception {
       mockMvc.perform(delete("/api/messages/{messageId}", testMessageId))
           .andExpect(status().isNoContent());
