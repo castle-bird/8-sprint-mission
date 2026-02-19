@@ -8,7 +8,7 @@ public class MessageException extends DiscodeitException {
 
   // 글로벌 메세지 에러
   public MessageException() {
-    super(ErrorCode.CHANNEL_ERROR);
+    super(ErrorCode.MESSAGE_ERROR);
   }
 
   public MessageException(ErrorCode errorCode) {

@@ -17,7 +17,11 @@ public enum ErrorCode {
 
   // 메세지 에러
   MESSAGE_ERROR("메세지 에러", HttpStatus.BAD_REQUEST), // 400
-  MESSAGE_NOT_FOUND("메세지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND); // 404
+  MESSAGE_NOT_FOUND("메세지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND), // 404
+
+  // 읽음 처리 에러
+  READ_STATUS_ERROR("읽음 처리 에러", HttpStatus.BAD_REQUEST),
+  READ_STATUS_NOT_FOUND("읽음 상태를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
   private final String message;
   private final HttpStatus status;
