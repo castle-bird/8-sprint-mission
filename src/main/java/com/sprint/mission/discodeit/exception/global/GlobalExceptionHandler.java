@@ -42,4 +42,35 @@ public class GlobalExceptionHandler {
         .status(HttpStatus.BAD_REQUEST)
         .body(errorResponse);
   }
+
+  /**
+   * DiscodeitException 예외 처리
+   */
+  @ExceptionHandler(DiscodeitException.class)
+  public ResponseEntity<ErrorResponse> handleDiscodeitException(DiscodeitException e) {
+
+    return ResponseEntity
+        .status(e.getStatus())
+        .body(ErrorResponse.from(e));
+  }
+
+  /**
+   * 일반 에러 처리 (DB 연결 실패, NullPointerException 등)
+   */
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleException(Exception e) {
+
+    ErrorResponse errorResponse = new ErrorResponse(
+        Instant.now(),
+        "INTERNAL_SERVER_ERROR",
+        "서버 내부 오류가 발생했습니다.",
+        Map.of(),
+        e.getClass().getSimpleName(),
+        HttpStatus.INTERNAL_SERVER_ERROR.value()
+    );
+
+    return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(errorResponse);
+  }
 }
