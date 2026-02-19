@@ -25,7 +25,7 @@ info:
   java:
     version: 17
   spring-boot:
-    version: 3.4.0
+    version: 3.5.9
 
   # 주요 설정 정보
   # 환경 변수(${})들은 -dev, -prod에서 알아서 가져오게 됨
