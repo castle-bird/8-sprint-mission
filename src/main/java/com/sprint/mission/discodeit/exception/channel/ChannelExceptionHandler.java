@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.exception.channel;
 
 import com.sprint.mission.discodeit.dto.response.ErrorResponse;
 import com.sprint.mission.discodeit.exception.global.DiscodeitException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,7 +16,7 @@ public class ChannelExceptionHandler {
     ErrorResponse errorResponse = ErrorResponse.from(e);
 
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
+        .status(e.getStatus())
         .body(errorResponse);
   }
 
@@ -28,7 +27,7 @@ public class ChannelExceptionHandler {
     ErrorResponse errorResponse = ErrorResponse.from(e);
 
     return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
+        .status(e.getStatus())
         .body(errorResponse);
   }
 }
