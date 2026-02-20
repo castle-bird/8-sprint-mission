@@ -40,7 +40,8 @@ services:
     volumes:
       # BinaryContentStorage 데이터가 유지되도록 볼륨 구성
       # (애플리케이션 내의 업로드 경로를 실제 로컬 폴더나 볼륨에 매핑)
-      - ./discodeit_uploads:/app/uploads
+      #- ./discodeit_uploads:/app/uploads
+      - ./discodeit_uploads:/app/.discodeit/storage
     networks:
       - discodeit-net
 
