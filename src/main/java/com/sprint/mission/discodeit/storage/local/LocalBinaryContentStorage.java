@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.storage.impl;
+package com.sprint.mission.discodeit.storage.local;
 
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
@@ -26,7 +26,7 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
   private final Path root;
 
   public LocalBinaryContentStorage(
-      @Value("${discodeit.storage.path}") Path root
+      @Value("${discodeit.storage.local.root-path}") Path root
   ) {
     this.root = root;
   }
