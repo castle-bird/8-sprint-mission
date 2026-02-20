@@ -1,21 +1,14 @@
 package com.sprint.mission.discodeit.exception.message;
 
-import com.sprint.mission.discodeit.exception.global.DiscodeitException;
-import com.sprint.mission.discodeit.exception.global.ErrorCode;
-import java.util.Map;
+import com.sprint.mission.discodeit.exception.DiscodeitException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 
 public class MessageException extends DiscodeitException {
+    public MessageException(ErrorCode errorCode) {
+        super(errorCode);
+    }
 
-  // 글로벌 메세지 에러
-  public MessageException() {
-    super(ErrorCode.MESSAGE_ERROR);
-  }
-
-  public MessageException(ErrorCode errorCode) {
-    super(errorCode);
-  }
-
-  public MessageException(ErrorCode errorCode, Map<String, Object> details) {
-    super(errorCode, details);
-  }
-}
+    public MessageException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
+    }
+} 

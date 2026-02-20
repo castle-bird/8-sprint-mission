@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.exception.message;
 
-import com.sprint.mission.discodeit.exception.global.ErrorCode;
-import java.util.Map;
+import com.sprint.mission.discodeit.exception.ErrorCode;
+import java.util.UUID;
 
 public class MessageNotFoundException extends MessageException {
 
@@ -9,7 +9,9 @@ public class MessageNotFoundException extends MessageException {
     super(ErrorCode.MESSAGE_NOT_FOUND);
   }
 
-  public MessageNotFoundException(Map<String, Object> details) {
-    super(ErrorCode.MESSAGE_NOT_FOUND, details);
+  public static MessageNotFoundException withId(UUID messageId) {
+    MessageNotFoundException exception = new MessageNotFoundException();
+    exception.addDetail("messageId", messageId);
+    return exception;
   }
-}
+} 
