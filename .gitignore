@@ -47,3 +47,6 @@ bin/
 /data/*
 .discodeit
 uploads
+
+### Log ###
+.logs

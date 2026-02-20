@@ -1,56 +1,53 @@
 spring:
+  profiles:
+    active: dev
+    group:
+      dev: "dev"
+      prod: "prod"
   application:
     name: discodeit
   servlet:
     multipart:
       maxFileSize: 10MB # 파일 하나의 최대 크기
       maxRequestSize: 30MB  # 한 번에 최대 업로드 가능 용량
-  datasource:
-    url: jdbc:postgresql://localhost:5432/discodeit?currentSchema=discodeit
-    username: discodeit_user
-    password: discodeit1234
-    driver-class-name: org.postgresql.Driver
-    # PostgreSQL createClob() 경고 메시지 제거
-    hikari:
-      connection-init-sql: SET SESSION hibernate.jdbc.lob.non_contextual_creation=true
-  # 1-2. jpa config
-  jpa:
-    generate-ddl: false
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        format_sql: true
-        highlight_sql: true
-        use_sql_comments: true
-        default_batch_fetch_size: 100 # N + 1 쿼리 묶음 100개
-    hibernate:
-      ddl-auto: update
+  boot:
+    admin:
+      client:
+        instance:
+          name: discodeit
 
-discodeit:
-  storage:
-    type: local
-    local:
-      root-path: .discodeit/storage
+# 애플리케이션 정보 (Actuator info 엔드포인트용)
+# info: 로 시작하면 Actuator가 알아서 내용 가져간다고함
+info:
+  app:
+    name: Discodeit
+    version: 1.7.0
+  java:
+    version: 17
+  spring-boot:
+    version: 3.5.9
 
+  # 주요 설정 정보
+  # 환경 변수(${})들은 -dev, -prod에서 알아서 가져오게 됨
+  configuration:
+    datasource:
+      url: ${spring.datasource.url}
+      driver-class-name: ${spring.datasource.driver-class-name}
+    jpa:
+      ddl-auto: ${spring.jpa.hibernate.ddl-auto}
+    storage:
+      type: ${discodeit.storage.type}
+      path: ${discodeit.storage.path}
+    multipart:
+      max-file-size: ${spring.servlet.multipart.max-file-size}
+      max-request-size: ${spring.servlet.multipart.max-request-size}
 
-# swagger config
-# https://springdoc.org/#properties
-springdoc:
-  api-docs:
-    # OpenAPI 명세서 경로(JSON)
-    path: /v3/api-docs
-  swagger-ui:
-    # OpenAPI 명세서 경로(HTML)
-    path: /swagger-ui.html
-    # 요청 응답 시간 표시
-    display-request-duration: true
-    # API 정렬 기준
-    operations-sorter: method   # HTTP 메서드의 알파벳 기준
-  #    operations-sorter: alpha    # Java 메서드의 알파벳 기준
-logging:
-  level:
-    # 실행되는 SQL 출력
-    org.hibernate.SQL: debug
-    # 바인딩되는 파라미터 출력
-    org.hibernate.orm.jdbc.bind: trace
+# Actuator에서 위 정보를 노출하도록 활성화 (이걸 안 쓰면 출력이 안 됨)
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,loggers"
