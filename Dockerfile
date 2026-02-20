@@ -22,8 +22,12 @@ ENV PROJECT_VERSION=""
 # 7. JVM 옵션 환경 변수 설정 (기본값 빈 문자열)
 ENV JVM_OPTS=""
 
+# 시간대 설정
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # 8. 애플리케이션 실행 명령어 설정
 # 빌드된 jar 파일 위치: build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar
 #ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar build/libs/*.jar"]
-ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar build/libs/$(ls build/libs | grep -v 'plain' | head -n 1)"]
+ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -Duser.timezone=Asia/Seoul -jar build/libs/$(ls build/libs | grep -v 'plain' | head -n 1)"]
 #ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar"]

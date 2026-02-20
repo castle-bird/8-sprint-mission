@@ -34,12 +34,13 @@ services:
     env_file:
       - .env # 보안 환경 변수 로드
     environment:
+      - TZ=Asia/Seoul
       - SPRING_PROFILES_ACTIVE=prod
       - POSTGRES_URL=jdbc:postgresql://db:5432/discodeit
     volumes:
       # BinaryContentStorage 데이터가 유지되도록 볼륨 구성
       # (애플리케이션 내의 업로드 경로를 실제 로컬 폴더나 볼륨에 매핑)
-      - discodeit_uploads:/app/uploads
+      - ./discodeit_uploads:/app/uploads
     networks:
       - discodeit-net
 
