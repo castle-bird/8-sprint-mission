@@ -35,8 +35,13 @@ services:
       - .env # 보안 환경 변수 로드
     environment:
       - TZ=Asia/Seoul
-      - SPRING_PROFILES_ACTIVE=prod
       - POSTGRES_URL=jdbc:postgresql://db:5432/discodeit
+      - SPRING_PROFILES_ACTIVE=prod
+      - STORAGE_TYPE=${STORAGE_TYPE}
+      - AWS_S3_ACCESS_KEY=${AWS_S3_ACCESS_KEY}
+      - AWS_S3_SECRET_KEY=${AWS_S3_SECRET_KEY}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
     volumes:
       # BinaryContentStorage 데이터가 유지되도록 볼륨 구성
       # (애플리케이션 내의 업로드 경로를 실제 로컬 폴더나 볼륨에 매핑)
