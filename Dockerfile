@@ -46,6 +46,9 @@ RUN chmod +x ./gradlew
 RUN ./gradlew build -x test --stacktrace || true
 
 COPY . .
+
+RUN chmod +x gradlew
+
 RUN ./gradlew clean build -x test
 
 # apline으로 레이어 변경
