@@ -1,0 +1,64 @@
+services:
+  # 1. PostgreSQL 서비스 설정
+  db:
+    image: postgres:17-alpine
+    container_name: postgred-discodeit
+    ports:
+      - "54321:5432" # 로컬 PC에서 접속할 포트 매핑
+    env_file:
+      - .env # 보안을 위해 .env 파일에서 계정 정보 로드
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB_DEV}
+      - POSTGRES_USER=${POSTGRES_USER_DEV}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_DEV}
+    volumes:
+      # PostgreSQL 데이터 영속성 유지
+      - postgres_data:/var/lib/postgresql/data
+      # 초기 스키마 자동 실행을 위해 schema.sql을 지정된 경로에 마운트
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - discodeit-net
+    healthcheck: # DB가 완전히 준비되었는지 확인하는 로직
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d discodeit" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. 스프링 부트 애플리케이션 서비스 설정
+  app:
+    build: . # 로컬 Dockerfile을 사용하여 빌드
+    container_name: discodeit-dev-slime
+    ports:
+      - "8080:80" # 개발 환경용 포트 매핑
+    depends_on:
+      db:
+        condition: service_healthy # DB가 Healthcheck를 통과한 후 실행
+    env_file:
+      - .env # 보안 환경 변수 로드
+    environment:
+      - TZ=Asia/Seoul
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${POSTGRES_URL_DEV}/${POSTGRES_DB_DEV}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER_DEV}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD_DEV}
+      - STORAGE_TYPE=${STORAGE_TYPE}
+      - AWS_S3_ACCESS_KEY=${AWS_S3_ACCESS_KEY}
+      - AWS_S3_SECRET_KEY=${AWS_S3_SECRET_KEY}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+    volumes:
+      # BinaryContentStorage 데이터가 유지되도록 볼륨 구성
+      # (애플리케이션 내의 업로드 경로를 실제 로컬 폴더나 볼륨에 매핑)
+      #- ./discodeit_uploads:/app/uploads
+      - ./discodeit_uploads:/app/.discodeit/storage
+    networks:
+      - discodeit-net
+
+# 볼륨 정의: 컨테이너가 삭제되어도 데이터는 남음
+volumes:
+  postgres_data:
+  discodeit_uploads:
+
+networks:
+  discodeit-net:
+    driver: bridge
