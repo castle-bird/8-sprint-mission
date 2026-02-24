@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.storage;
 import java.io.IOException;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 
 @SpringBootTest(classes = AWSS3Test.class)
+@Disabled // 로컬/CI 환경에 AWS 키가 없을 때 테스트 제외
 public class AWSS3Test {
 
   @Value("${AWS_S3_ACCESS_KEY}")

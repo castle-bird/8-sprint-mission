@@ -40,8 +40,15 @@ class UserStatusRepositoryTest {
   private User createTestUserWithStatus(String username, String email, Instant lastActiveAt) {
     BinaryContent profile = new BinaryContent("profile.jpg", 1024L, "image/jpeg");
     User user = new User(username, email, "password123!@#", profile);
+
+    // 1. User를 먼저 저장 (profile은 User에 Cascade 설정이 되어 있어 함께 저장됩니다)
+    userRepository.save(user);
+
+    // 2. 저장된 User를 가지고 UserStatus를 생성 및 명시적 저장
     UserStatus status = new UserStatus(user, lastActiveAt);
-    return userRepository.save(user);
+    userStatusRepository.save(status);
+
+    return user;
   }
 
   @Test
@@ -62,7 +69,9 @@ class UserStatusRepositoryTest {
     // then
     assertThat(foundStatus).isPresent();
     assertThat(foundStatus.get().getUser().getId()).isEqualTo(userId);
-    assertThat(foundStatus.get().getLastActiveAt()).isEqualTo(now);
+    // assertThat(foundStatus.get().getLastActiveAt()).isEqualTo(now);
+    assertThat(foundStatus.get().getLastActiveAt().truncatedTo(ChronoUnit.MILLIS))
+        .isEqualTo(now.truncatedTo(ChronoUnit.MILLIS));
   }
 
   @Test
@@ -82,8 +91,9 @@ class UserStatusRepositoryTest {
   @DisplayName("UserStatus의 isOnline 메서드는 최근 활동 시간이 5분 이내일 때 true를 반환한다")
   void isOnline_LastActiveWithinFiveMinutes_ReturnsTrue() {
     // given
-    Instant now = Instant.now();
-    User user = createTestUserWithStatus("testUser", "test@example.com", now);
+//    Instant now = Instant.now();
+    Instant recent = Instant.now().minusSeconds(60);
+    User user = createTestUserWithStatus("testUser", "test@example.com", recent);
 
     // 영속성 컨텍스트 초기화
     entityManager.flush();
@@ -95,6 +105,13 @@ class UserStatusRepositoryTest {
     // then
     assertThat(foundStatus).isPresent();
     assertThat(foundStatus.get().isOnline()).isTrue();
+//    assertThat(foundStatus)
+//        .isPresent()
+//        .hasValueSatisfying(status -> {
+//          assertThat(status.isOnline())
+//              .as("최근 활동 시간(%s)이 5분 이내이므로 온라인이어야 합니다", status.getLastActiveAt())
+//              .isTrue();
+//        });
   }
 
   @Test

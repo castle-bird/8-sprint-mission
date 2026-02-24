@@ -91,13 +91,16 @@ public class BasicUserStatusService implements UserStatusService {
   @Transactional
   @Override
   public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request) {
-    //Instant newLastActiveAt = request.newLastActiveAt();
-    Instant newLastActiveAt = Instant.now();
+    // 1. 하드코딩된 Instant.now() 대신 요청 객체(request)의 시간을 사용하도록 변경합니다.
+    Instant newLastActiveAt = request.newLastActiveAt();
+
     log.debug("사용자 ID로 상태 수정 시작: userId={}, newLastActiveAt={}",
         userId, newLastActiveAt);
 
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> UserStatusNotFoundException.withUserId(userId));
+
+    // 2. 전달받은 정확한 시간으로 엔티티를 업데이트합니다.
     userStatus.update(newLastActiveAt);
 
     log.info("사용자 ID로 상태 수정 완료: userId={}", userId);
