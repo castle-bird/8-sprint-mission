@@ -12,8 +12,9 @@ spring:
       ddl-auto: update
     open-in-view: false
   profiles:
-    active:
-      - prod
+    # dev, prod
+    active: prod
+
 
 management:
   endpoints:

@@ -88,12 +88,14 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
 
   @Override
   public ResponseEntity<?> download(BinaryContentDto metaData) {
-    /* [지문 조건] download 메소드는 PresignedUrl을 활용해 리다이렉트하는 방식으로 구현 */
     String key = metaData.id().toString();
+
+    String originalFileName = metaData.fileName();
 
     GetObjectRequest getObjectRequest = GetObjectRequest.builder()
         .bucket(bucketName)
         .key(key)
+        .responseContentDisposition("attachment; filename=\"" + originalFileName + "\"")
         .build();
 
     GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
@@ -104,7 +106,6 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
     PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
     String presignedUrl = presignedRequest.url().toString();
 
-    /* 생성된 URL로 302 Redirect 응답 반환 */
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(URI.create(presignedUrl))
         .build();

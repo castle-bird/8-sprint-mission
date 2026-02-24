@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://${POSTGRES_URL_PROD}/${POSTGRES_DB_PROD}
+    username: ${POSTGRES_USER_PROD}
+    password: ${POSTGRES_PASSWORD_PROD}
   jpa:
     properties:
       hibernate:
