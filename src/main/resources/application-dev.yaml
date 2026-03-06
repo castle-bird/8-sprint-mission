@@ -7,9 +7,13 @@ spring:
     username: ${POSTGRES_USER_DEV}
     password: ${POSTGRES_PASSWORD_DEV}
   jpa:
+    hibernate:
+      ddl-auto: create-drop
+
     properties:
       hibernate:
         format_sql: true
+        ddl-auto:
 
 logging:
   level:
