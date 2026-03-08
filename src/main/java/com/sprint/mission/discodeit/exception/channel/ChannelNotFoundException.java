@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.exception.channel;
 
-import com.sprint.mission.discodeit.exception.global.ErrorCode;
-import java.util.Map;
+import com.sprint.mission.discodeit.exception.ErrorCode;
+import java.util.UUID;
 
 public class ChannelNotFoundException extends ChannelException {
 
@@ -9,7 +9,9 @@ public class ChannelNotFoundException extends ChannelException {
     super(ErrorCode.CHANNEL_NOT_FOUND);
   }
 
-  public ChannelNotFoundException(Map<String, Object> details) {
-    super(ErrorCode.CHANNEL_NOT_FOUND, details);
+  public static ChannelNotFoundException withId(UUID channelId) {
+    ChannelNotFoundException exception = new ChannelNotFoundException();
+    exception.addDetail("channelId", channelId);
+    return exception;
   }
-}
+} 

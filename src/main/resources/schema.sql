@@ -130,5 +130,6 @@ ALTER TABLE read_statuses
 CREATE INDEX idx_messages_channel_created ON messages (channel_id, created_at DESC);
 -- 읽기 상태 조회 (사용자+채널)
 CREATE INDEX idx_read_status_user_channel ON read_statuses (user_id, channel_id);
+CREATE INDEX idx_read_status_user_channel ON read_statuses (user_id, channel_id);
 -- 첨부파일 조회
 CREATE INDEX idx_message_attachments_message ON message_attachments (message_id);

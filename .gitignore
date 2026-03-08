@@ -50,3 +50,9 @@ uploads
 
 ### Log ###
 .logs
+
+### 환경 ###
+discodeit-storage-bucket
+.env
+discodeit_uploads
+discodeit.env

@@ -1,21 +1,14 @@
 package com.sprint.mission.discodeit.exception.readstatus;
 
-import com.sprint.mission.discodeit.exception.global.DiscodeitException;
-import com.sprint.mission.discodeit.exception.global.ErrorCode;
-import java.util.Map;
+import com.sprint.mission.discodeit.exception.DiscodeitException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 
 public class ReadStatusException extends DiscodeitException {
+    public ReadStatusException(ErrorCode errorCode) {
+        super(errorCode);
+    }
 
-  // 글로벌 읽음처리 에러
-  public ReadStatusException() {
-    super(ErrorCode.READ_STATUS_ERROR);
-  }
-
-  public ReadStatusException(ErrorCode errorCode) {
-    super(errorCode);
-  }
-
-  public ReadStatusException(ErrorCode errorCode, Map<String, Object> details) {
-    super(errorCode, details);
-  }
-}
+    public ReadStatusException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
+    }
+} 
