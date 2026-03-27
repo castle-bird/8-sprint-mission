@@ -13,12 +13,6 @@ import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 import org.springframework.stereotype.Component;
 
-/**
- * 세션 만료 처리 전략
- * <p>
- * 동시 로그인 제한으로 인해 기존 세션이 만료되었을 때의 처리를 담당한다.
- * 통일된 JSON 형식의 응답을 반환하여 프론트엔드에서 적절히 처리할 수 있도록 한다.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j

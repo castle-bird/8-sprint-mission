@@ -16,11 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 인증 관련 REST API 컨트롤러
- * <p>
- * CSRF 토큰 발급, 현재 로그인 사용자 정보 조회 등의 기능을 제공한다.
- */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -43,7 +38,7 @@ public class AuthController {
     log.info("{} CSRF 토큰 발급 완료", AuthConstants.LOG_PREFIX_CSRF_TOKEN);
     return ResponseEntity.ok(response);
   }
-  
+
   @GetMapping("/me")
   public ResponseEntity<AuthSuccessResponse<UserDto>> getUserDetails(
       @AuthenticationPrincipal DiscodeitUserDetails userDetails) {

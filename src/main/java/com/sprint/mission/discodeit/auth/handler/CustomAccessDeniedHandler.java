@@ -14,11 +14,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-/**
- * 접근 거부 핸들러
- * <p>
- * 인증은 되었지만 권한이 부족한 경우 403 응답을 통일된 JSON 형식으로 반환한다.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j

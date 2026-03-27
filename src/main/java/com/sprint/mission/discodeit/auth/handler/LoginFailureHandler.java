@@ -16,11 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-/**
- * 로그인 실패 핸들러
- * <p>
- * 인증 실패 시 통일된 JSON 형식의 에러 응답을 반환한다.
- */
+
 @Component
 @RequiredArgsConstructor
 @Slf4j

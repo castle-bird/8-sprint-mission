@@ -1,10 +1,5 @@
 package com.sprint.mission.discodeit.auth.constants;
 
-/**
- * 인증/보안 관련 상수 통합 관리 클래스
- * <p>
- * 에러 코드, 메시지, 쿠키 이름, HTTP 상태 코드 등을 중앙에서 관리하여 일관성을 유지한다.
- */
 public final class AuthConstants {
 
   private AuthConstants() {
