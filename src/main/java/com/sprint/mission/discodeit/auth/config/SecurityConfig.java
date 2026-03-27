@@ -1,13 +1,17 @@
 package com.sprint.mission.discodeit.auth.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprint.mission.discodeit.auth.constants.AuthConstants;
+import com.sprint.mission.discodeit.auth.dto.AuthErrorResponse;
 import com.sprint.mission.discodeit.auth.handler.CustomAccessDeniedHandler;
+import com.sprint.mission.discodeit.auth.handler.CustomSessionExpiredStrategy;
 import com.sprint.mission.discodeit.auth.handler.LoginFailureHandler;
 import com.sprint.mission.discodeit.auth.handler.LoginSuccessHandler;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +26,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class SecurityConfig {
 
   private final SpaCsrfTokenRequestHandler spaCsrfTokenRequestHandler;
+  private final CustomSessionExpiredStrategy customSessionExpiredStrategy;
+  private final ObjectMapper objectMapper;
 
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -59,9 +65,11 @@ public class SecurityConfig {
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
             // 로그인, 로그아웃, 회원가입은 CSRF 검증에서 제외
-            .ignoringRequestMatchers("/api/auth/login")
-            .ignoringRequestMatchers("/api/auth/logout")
-            .ignoringRequestMatchers("/api/users")
+            .ignoringRequestMatchers(
+                "/api/auth/login",
+                "/api/auth/logout",
+                "/api/users"
+            )
         )
         // 폼 로그인 설정
         .formLogin(formLogin -> formLogin
@@ -74,23 +82,32 @@ public class SecurityConfig {
         // 로그아웃 설정
         .logout(logout -> logout
             .logoutUrl("/api/auth/logout")
-            .deleteCookies("JSESSIONID", "XSRF-TOKEN")
+            .deleteCookies(AuthConstants.COOKIE_SESSION_ID, AuthConstants.COOKIE_XSRF_TOKEN)
             .invalidateHttpSession(true)
             .clearAuthentication(true)
             .logoutSuccessHandler((request, response, authentication) ->
-                response.setStatus(HttpServletResponse.SC_OK)
+                response.setStatus(200)
             )
         )
         // 예외 처리 설정
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) -> {
-              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-              response.setContentType("application/json");
+              AuthErrorResponse errorResponse = new AuthErrorResponse(
+                  AuthConstants.ERROR_UNAUTHORIZED,
+                  AuthConstants.MSG_LOGIN_REQUIRED
+              );
+
+              response.setStatus(401);
+              response.setContentType(MediaType.APPLICATION_JSON_VALUE);
               response.setCharacterEncoding("UTF-8");
-              response.getWriter()
-                  .write("{\"error\": \"UNAUTHORIZED\", \"message\": \"로그인이 필요합니다.\"}");
+              response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
             })
             .accessDeniedHandler(customAccessDeniedHandler)
+        )
+        // 동시 로그인 제한 및 세션 설정
+        .sessionManagement(session -> session
+            .maximumSessions(1)
+            .expiredSessionStrategy(customSessionExpiredStrategy)
         )
         // 인증 제공자
         .authenticationProvider(authenticationProvider);

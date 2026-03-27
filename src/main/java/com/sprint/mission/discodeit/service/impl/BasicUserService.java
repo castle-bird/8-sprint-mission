@@ -139,7 +139,10 @@ public class BasicUserService implements UserService {
         .orElse(null);
 
     String newPassword = userUpdateRequest.newPassword();
-    user.update(newUsername, newEmail, newPassword, nullableProfile);
+    String encodedNewPassword = (newPassword == null || newPassword.isBlank())
+        ? null
+        : bCryptPasswordEncoder.encode(newPassword);
+    user.update(newUsername, newEmail, encodedNewPassword, nullableProfile);
 
     log.info("사용자 수정 완료: id={}", userId);
     return userMapper.toDto(user);

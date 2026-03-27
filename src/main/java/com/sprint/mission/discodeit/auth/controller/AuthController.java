@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit.auth.controller;
 
+import com.sprint.mission.discodeit.auth.constants.AuthConstants;
+import com.sprint.mission.discodeit.auth.dto.AuthSuccessResponse;
+import com.sprint.mission.discodeit.auth.dto.CsrfTokenResponse;
 import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.mapper.UserMapper;
@@ -13,6 +16,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 인증 관련 REST API 컨트롤러
+ * <p>
+ * CSRF 토큰 발급, 현재 로그인 사용자 정보 조회 등의 기능을 제공한다.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -21,30 +29,35 @@ public class AuthController {
 
   private final UserMapper userMapper;
 
-  /**
-   * 클라이언트에게 CSRF 토큰을 발급
-   */
-  @GetMapping("/csrf-token")
-  public ResponseEntity<Void> getCsrfToken(CsrfToken csrfToken) {
-    // CsrfToken을 파라미터로 받는 것만으로 토큰이 생성 및 응답 헤더에 추가됨
-    log.info("CSRF 토큰 발급. 토큰 값: {}", csrfToken.getToken());
-    return ResponseEntity.ok().build();
-  }
 
-  /**
-   * 현재 인증된 사용자의 정보를 반환
-   */
+  @GetMapping("/csrf-token")
+  public ResponseEntity<AuthSuccessResponse<CsrfTokenResponse>> getCsrfToken(
+      CsrfToken csrfToken) {
+    CsrfTokenResponse tokenResponse = new CsrfTokenResponse(
+        csrfToken.getToken(),
+        csrfToken.getHeaderName(),
+        csrfToken.getParameterName()
+    );
+    AuthSuccessResponse<CsrfTokenResponse> response = new AuthSuccessResponse<>(tokenResponse);
+
+    log.info("{} CSRF 토큰 발급 완료", AuthConstants.LOG_PREFIX_CSRF_TOKEN);
+    return ResponseEntity.ok(response);
+  }
+  
   @GetMapping("/me")
-  public ResponseEntity<UserDto> getUserDetails(
+  public ResponseEntity<AuthSuccessResponse<UserDto>> getUserDetails(
       @AuthenticationPrincipal DiscodeitUserDetails userDetails) {
 
     if (userDetails == null) {
-      // @AuthenticationPrincipal이 null을 반환하는 경우는 일반적으로 인증되지 않았음을 의미
+      log.warn("{} 인증되지 않은 사용자가 /me 엔드포인트 접근",
+          AuthConstants.LOG_PREFIX_CSRF_TOKEN);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     UserDto userDto = userMapper.toDto(userDetails.getUser());
-    log.info("현재 로그인 사용자 정보 조회: {}", userDto.email());
-    return ResponseEntity.ok(userDto);
+    AuthSuccessResponse<UserDto> response = new AuthSuccessResponse<>(userDto);
+
+    log.info("{} 사용자 정보 조회: {}", AuthConstants.LOG_PREFIX_CSRF_TOKEN, userDto.email());
+    return ResponseEntity.ok(response);
   }
 }
