@@ -46,10 +46,14 @@ public class UserController implements UserApi {
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
     log.info("사용자 생성 요청: {}", userCreateRequest);
+
     Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
         .flatMap(this::resolveProfileRequest);
+
     UserDto createdUser = userService.create(userCreateRequest, profileRequest);
+
     log.debug("사용자 생성 응답: {}", createdUser);
+
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdUser);
