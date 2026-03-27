@@ -38,7 +38,7 @@ public class SecurityConfig {
       DaoAuthenticationProvider authenticationProvider) throws Exception {
     return http.authorizeHttpRequests(
             auth -> auth.requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**", "/error",
-                    "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    "/swagger-ui/**", "/v3/api-docs/**", "/api/auth/logout").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf-token").permitAll().anyRequest()
@@ -51,10 +51,11 @@ public class SecurityConfig {
             .csrfTokenRequestHandler(spaCsrfTokenRequestHandler))
         // formLogin
         .formLogin(
-            formLogin -> formLogin.loginPage("/index.html").loginProcessingUrl("/api/auth/login")
+            formLogin -> formLogin
+                .loginPage("/index.html")
+                .loginProcessingUrl("/api/auth/login")
                 .successHandler(loginSuccessHandler).failureHandler(loginFailureHandler)
-                .permitAll())
-        .exceptionHandling(ex -> ex
+                .permitAll()).exceptionHandling(ex -> ex
             // 인증되지 않은 사용자가 보호된 리소스에 접근했을 때 리다이렉트 대신 401 반환 (SPA를 위해)
             .authenticationEntryPoint((request, response, authException) -> {
               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -66,6 +67,16 @@ public class SecurityConfig {
             // 커스텀 핸들러(403 에러 핸들러)로 권한 없음 예외 처리
             .accessDeniedHandler(customAccessDeniedHandler))
         .authenticationProvider(authenticationProvider)
+        .logout(logout -> logout
+            .logoutUrl("/api/auth/logout") // 프론트엔드 호출 경로
+            .deleteCookies("JSESSIONID", "XSRF-TOKEN") // 쿠키 삭제
+            .invalidateHttpSession(true) // 세션 무효화
+            .clearAuthentication(true)   // 인증 정보 삭제
+            .logoutSuccessHandler((request, response, authentication) -> {
+              // 리다이렉트 하지 않고 200 OK 상태 코드만 전송
+              response.setStatus(HttpServletResponse.SC_OK);
+            })
+        )
         .build();
   }
 

@@ -3,11 +3,14 @@ package com.sprint.mission.discodeit.auth.controller;
 import com.sprint.mission.discodeit.auth.config.SpaCsrfTokenRequestHandler;
 import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetailsService;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +27,7 @@ public class AuthController {
 
   private final DiscodeitUserDetailsService discodeitUserDetailsService;
   private final SpaCsrfTokenRequestHandler spaCsrfTokenRequestHandler;
+  private final UserMapper userMapper;
 
   // csrf 발급
   @GetMapping("/csrf-token")
@@ -42,5 +46,21 @@ public class AuthController {
         discodeitUserDetails.getUsername());
     log.debug("로그인 응답: {}", user);
     return ResponseEntity.status(HttpStatus.OK).body(user);
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<UserDto> getUserDetails(
+      @AuthenticationPrincipal DiscodeitUserDetails userDetails) {
+
+    // 1. 인증 정보가 없는 경우 (Security에서 걸러지지만 방어 코드 작성)
+    if (userDetails == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    // 2. UserDetails 내부의 User 엔티티를 UserDto로 변환하여 반환
+    UserDto userDto = userMapper.toDto(userDetails.getUser());
+
+    log.info("현재 로그인 사용자 조회: {}", userDto.email());
+    return ResponseEntity.ok(userDto);
   }
 }
