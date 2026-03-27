@@ -53,6 +53,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserStatusDto find(UUID userStatusId) {
     log.debug("사용자 상태 조회 시작: id={}", userStatusId);
     UserStatusDto dto = userStatusRepository.findById(userStatusId)
@@ -63,6 +64,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<UserStatusDto> findAll() {
     log.debug("전체 사용자 상태 목록 조회 시작");
     List<UserStatusDto> dtos = userStatusRepository.findAll().stream()

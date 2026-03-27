@@ -75,6 +75,7 @@ public class BasicUserService implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public UserDto find(UUID userId) {
     log.debug("사용자 조회 시작: id={}", userId);
     UserDto userDto = userRepository.findById(userId)
@@ -85,6 +86,7 @@ public class BasicUserService implements UserService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<UserDto> findAll() {
     log.debug("모든 사용자 조회 시작");
     List<UserDto> userDtos = userRepository.findAllWithProfileAndStatus()
