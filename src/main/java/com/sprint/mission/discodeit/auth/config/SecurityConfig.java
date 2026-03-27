@@ -29,21 +29,32 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http,
-      LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler,
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      LoginSuccessHandler loginSuccessHandler,
+      LoginFailureHandler loginFailureHandler,
       CustomAccessDeniedHandler customAccessDeniedHandler,
-      DaoAuthenticationProvider authenticationProvider) throws Exception {
+      DaoAuthenticationProvider authenticationProvider
+  ) throws Exception {
     http
-        // 1. 요청별 접근 권한 설정
+        // 접근 권한 설정
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**", "/error",
-                "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            .requestMatchers(
+                "/",
+                "/index.html",
+                "/favicon.ico",
+                "/assets/**",
+                "/error",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/api/auth/login",
+                "/api/auth/logout"
+            ).permitAll()
             .requestMatchers(HttpMethod.GET, "/api/auth/csrf-token").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/users").permitAll() // 회원가입
-            .requestMatchers("/api/auth/login", "/api/auth/logout").permitAll() // 로그인, 로그아웃
             .anyRequest().authenticated()
         )
-        // 2. CSRF 설정
+        // CSRF 설정
         .csrf(csrf -> csrf
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(spaCsrfTokenRequestHandler)
@@ -52,15 +63,15 @@ public class SecurityConfig {
             .ignoringRequestMatchers("/api/auth/logout")
             .ignoringRequestMatchers("/api/users")
         )
-        // 3. 폼 로그인 설정
+        // 폼 로그인 설정
         .formLogin(formLogin -> formLogin
-            .loginPage("/index.html") // 로그인 페이지 (SPA의 진입점)
-            .loginProcessingUrl("/api/auth/login") // Spring Security가 로그인 처리할 URL
+            .loginPage("/index.html")
+            .loginProcessingUrl("/api/auth/login")
             .successHandler(loginSuccessHandler)
             .failureHandler(loginFailureHandler)
             .permitAll()
         )
-        // 4. 로그아웃 설정
+        // 로그아웃 설정
         .logout(logout -> logout
             .logoutUrl("/api/auth/logout")
             .deleteCookies("JSESSIONID", "XSRF-TOKEN")
@@ -70,7 +81,7 @@ public class SecurityConfig {
                 response.setStatus(HttpServletResponse.SC_OK)
             )
         )
-        // 5. 예외 처리 설정
+        // 예외 처리 설정
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) -> {
               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -81,7 +92,7 @@ public class SecurityConfig {
             })
             .accessDeniedHandler(customAccessDeniedHandler)
         )
-        // 6. 인증 제공자 설정
+        // 인증 제공자
         .authenticationProvider(authenticationProvider);
 
     return http.build();

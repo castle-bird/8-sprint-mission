@@ -22,9 +22,7 @@ public class AuthController {
   private final UserMapper userMapper;
 
   /**
-   * 클라이언트에게 CSRF 토큰을 발급합니다.
-   * 이 엔드포인트에 접근하는 것만으로도 Spring Security는 CsrfFilter를 통해
-   * XSRF-TOKEN 쿠키를 응답에 포함시킵니다.
+   * 클라이언트에게 CSRF 토큰을 발급
    */
   @GetMapping("/csrf-token")
   public ResponseEntity<Void> getCsrfToken(CsrfToken csrfToken) {
@@ -34,9 +32,7 @@ public class AuthController {
   }
 
   /**
-   * 현재 인증된 사용자의 정보를 반환합니다.
-   * @param userDetails Spring Security가 주입해주는 현재 사용자의 Principal 객체
-   * @return 사용자 정보 DTO 또는 인증되지 않은 경우 401 응답
+   * 현재 인증된 사용자의 정보를 반환
    */
   @GetMapping("/me")
   public ResponseEntity<UserDto> getUserDetails(
