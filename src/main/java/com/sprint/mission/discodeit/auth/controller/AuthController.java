@@ -1,14 +1,14 @@
 package com.sprint.mission.discodeit.auth.controller;
 
 import com.sprint.mission.discodeit.auth.config.SpaCsrfTokenRequestHandler;
-import com.sprint.mission.discodeit.dto.data.UserDto;
-import com.sprint.mission.discodeit.dto.request.LoginRequest;
-import com.sprint.mission.discodeit.service.AuthService;
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetails;
+import com.sprint.mission.discodeit.auth.service.DiscodeitUserDetailsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
 
-  private final AuthService authService;
+  private final DiscodeitUserDetailsService discodeitUserDetailsService;
   private final SpaCsrfTokenRequestHandler spaCsrfTokenRequestHandler;
 
   // csrf 발급
@@ -33,15 +33,14 @@ public class AuthController {
     return ResponseEntity.ok().build();
   }
 
-
   // 로그인
-  @PostMapping(path = "login")
-  public ResponseEntity<UserDto> login(@RequestBody @Valid LoginRequest loginRequest) {
-    log.info("로그인 요청: username={}", loginRequest.username());
-    UserDto user = authService.login(loginRequest);
+  @PostMapping(path = "/login")
+  public ResponseEntity<UserDetails> login(
+      @RequestBody @Valid DiscodeitUserDetails discodeitUserDetails) {
+    log.info("로그인 요청: username={}", discodeitUserDetails.getUsername());
+    UserDetails user = discodeitUserDetailsService.loadUserByUsername(
+        discodeitUserDetails.getUsername());
     log.debug("로그인 응답: {}", user);
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(user);
+    return ResponseEntity.status(HttpStatus.OK).body(user);
   }
 }
