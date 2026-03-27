@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
@@ -29,6 +30,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
       AuthenticationException exception
   ) throws IOException, ServletException {
     String errorMessage = determineErrorMessage(exception);
+    log.warn("[LoginFailureHandler] 로그인 실패: {}", errorMessage, exception);
 
     // JSON 에러 응답 생성
     Map<String, Object> errorResponse = new HashMap<>();
@@ -37,14 +39,12 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     errorResponse.put("message", errorMessage);
 
     // 응답 헤더 설정
-    response.setContentType("application/json");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding("UTF-8");
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
 
     // JSON 응답 전송
     response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-
-    log.info("[LoginSuccessHandler] 로그인 실패");
   }
 
 
@@ -57,7 +57,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     } else if (exception instanceof DisabledException) {
       return "비활성화된 계정입니다.";
     } else {
-      return "로그인에 실패했습니다.";
+      return "로그인에 실패했습니다. 다시 시도해주세요.";
     }
   }
 }
